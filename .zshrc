@@ -274,6 +274,17 @@ setopt NO_FLOW_CONTROL
 # Allow comments even in interactive shells
 setopt INTERACTIVE_COMMENTS
 
+## Terminal titles
+# https://wiki.archlinux.org/title/zsh#xterm_title
+function xterm_title_precmd () {
+    print -Pn -- '\e]2;%m: %~\a'
+}
+
+case "$TERM" in
+    xterm*|rxvt*) add-zsh-hook -Uz precmd xterm_title_precmd ;;
+    *) ;;
+esac
+
 ## Use less as terminal pager
 export PAGER=less
 export LESS='--ignore-case --LONG-PROMPT --RAW-CONTROL-CHARS --window=-4'
