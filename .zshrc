@@ -1,27 +1,63 @@
+## Do not add duplicates
+typeset -U path
+typeset -U fpath
+
+## GOROOT
+for p in \
+    /usr/local/opt/go/libexec /usr/local/go; do
+    if [[ -d "$p" ]]; then
+        export GOROOT="$p"
+        break
+    fi
+done
+
+## PATH
+# Setting $path in the .zshenv does not produce the desired order
+# https://stackoverflow.com/questions/15726467/setting-zsh-path-not-producing-desired-order
+for p in \
+    /usr/local/opt/gawk/libexec/gnubin \
+     /usr/local/opt/gnu-sed/libexec/gnubin \
+     /usr/local/opt/gnu-indent/libexec/gnubin \
+     /usr/local/opt/make/libexec/gnubin \
+     /usr/local/opt/findutils/libexec/gnubin \
+     /usr/local/bin \
+     /usr/local/sbin \
+     /usr/local/opt/mysql-client/bin \
+     /usr/local/opt/openssl/bin \
+     /usr/local/opt/llvm/bin \
+     /usr/local/opt/curl/bin \
+     /usr/local/opt/terraform@0.12/bin \
+     /usr/local/opt/ruby/bin \
+     "$GOROOT/bin" \
+     "$HOME/bin";
+do
+    if [[ -d "$p" ]]; then
+        path=("$p" $path)
+    fi
+done
+
 ## Enable zsh-autosuggestions
-if [[ -s /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-    source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    # Fix for Emacs Vterm
-    case $TERM in
-        *-256color)
-            export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080" ;;
-    esac
-elif [[ -s /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    case $TERM in
-        *-256color)
-            export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080" ;;
-    esac
-fi
+for p in \
+    "$HOME/.zsh/zsh-autosuggestions" \
+        /usr/local/share/zsh-autosuggestions \
+        /usr/share/zsh-autosuggestions; do
+    if [[ -e "$p" ]]; then
+        source "$p/zsh-autosuggestions.zsh"
+        break
+    fi
+done
 
 ## Enable zsh-syntax-highlighting
-if [[ -s /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
-    source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [[ -s /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/share/zsh-syntax-highlighting/highlighters
-    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+for p in \
+    "$HOME/.zsh/zsh-syntax-highlighting" \
+        /usr/local/share/zsh-syntax-highlighting \
+        /usr/share/zsh-syntax-highlighting; do
+    if [[ -e "$p" ]]; then
+        export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$p/highlighters"
+        source "$p/zsh-syntax-highlighting.zsh"
+        break
+    fi
+done
 
 ## Enable additional zsh-completions
 fpath=(/usr/local/share/zsh-completions $fpath)
@@ -91,11 +127,13 @@ setopt LIST_ROWS_FIRST
 setopt LIST_PACKED
 
 # Export LS_COLORS
-if [[ -x /usr/local/bin/gdircolors ]]; then
-    eval "$(/usr/local/bin/gdircolors -b)"
-elif [[ -x /usr/bin/dircolors ]]; then
-    eval "$(/usr/bin/dircolors -b)"
-fi
+for p in \
+    /usr/local/bin/gdircolors /usr/bin/dircolors; do
+    if [[ -x "$p" ]]; then
+        eval "$("$p" -b)"
+        break
+    fi
+done
 
 # Display lists of matches for files in different colours depending on the file
 # type
@@ -241,37 +279,6 @@ export PAGER=less
 export LESS='--ignore-case --LONG-PROMPT --RAW-CONTROL-CHARS --window=-4'
 export LESS_TERMCAP_so=$'\e[33m\e[7m'
 export LESS_TERMCAP_se=$'\e[0m'
-
-## Set needed environment variables when entering some directories
-function set_golang_env {
-    local envs=()
-
-    case $PWD/ in
-        /Users/yuezhu/Code/go/*)
-            _dir=/Users/yuezhu/Code/go
-            envs=(
-                "GO111MODULE=on"
-                "GOPATH=$_dir"
-            )
-            ;;
-    esac
-
-    for env in "${envs[@]}"; do
-        IFS='=' read -r key val <<< "${env}"
-        # The "key" stores the variable name, and "${(P)key}" expands to the
-        # variable named stored in the "key".
-        if [[ "${(P)key}" != "${val}" ]]; then
-            _cmd="export $env"
-            eval "$_cmd" && echo "$_cmd"
-        fi
-    done
-}
-
-add-zsh-hook -Uz chpwd () {
-    set_golang_env
-}
-
-set_golang_env
 
 # Configure pinentry to use the correct TTY
 export GPG_TTY=$(tty)
