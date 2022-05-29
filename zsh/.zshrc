@@ -3,10 +3,11 @@ typeset -U path
 typeset -U fpath
 
 ## GOROOT
-for p in \
-    /usr/local/opt/go/libexec /usr/local/go; do
-    if [[ -d "$p" ]]; then
-        export GOROOT="$p"
+for d in \
+    /usr/local/opt/go/libexec /usr/local/go;
+do
+    if [[ -d "${d}" ]]; then
+        export GOROOT="${d}"
         break
     fi
 done
@@ -14,54 +15,53 @@ done
 ## PATH
 # Setting $path in the .zshenv does not produce the desired order
 # https://stackoverflow.com/questions/15726467/setting-zsh-path-not-producing-desired-order
-for p in \
+for d in \
     /usr/local/opt/gawk/libexec/gnubin \
-     /usr/local/opt/gnu-sed/libexec/gnubin \
-     /usr/local/opt/gnu-indent/libexec/gnubin \
-     /usr/local/opt/make/libexec/gnubin \
-     /usr/local/opt/findutils/libexec/gnubin \
-     /usr/local/bin \
-     /usr/local/sbin \
-     /usr/local/opt/mysql-client/bin \
-     /usr/local/opt/openssl/bin \
-     /usr/local/opt/llvm/bin \
-     /usr/local/opt/curl/bin \
-     /usr/local/opt/terraform@0.12/bin \
-     /usr/local/opt/ruby/bin \
-     "${GOROOT}/bin" \
-     "${HOME}/bin" \
-     "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
+        /usr/local/opt/gnu-sed/libexec/gnubin \
+        /usr/local/opt/gnu-indent/libexec/gnubin \
+        /usr/local/opt/make/libexec/gnubin \
+        /usr/local/opt/findutils/libexec/gnubin \
+        /usr/local/bin \
+        /usr/local/sbin \
+        /usr/local/opt/mysql-client/bin \
+        /usr/local/opt/openssl/bin \
+        /usr/local/opt/llvm/bin \
+        /usr/local/opt/curl/bin \
+        /usr/local/opt/terraform@0.12/bin \
+        /usr/local/opt/ruby/bin \
+        "${GOROOT}/bin" \
+        "${HOME}/bin" \
+        "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
-    if [[ -d "$p" ]]; then
-        path=("$p" $path)
+    if [[ -d "${d}" ]]; then
+        path=("${d}" $path)
     fi
 done
 
 ## Enable zsh-autosuggestions
-for p in \
-    "$HOME/.zsh/zsh-autosuggestions" \
+for d in \
+    "${HOME}/.zsh/zsh-autosuggestions" \
         /usr/local/share/zsh-autosuggestions \
-        /usr/share/zsh-autosuggestions; do
-    if [[ -e "$p" ]]; then
-        source "$p/zsh-autosuggestions.zsh"
+        /usr/share/zsh-autosuggestions;
+do
+    if [[ -e "${d}" ]]; then
+        source "${d}/zsh-autosuggestions.zsh"
         break
     fi
 done
 
 ## Enable zsh-syntax-highlighting
-for p in \
-    "$HOME/.zsh/zsh-syntax-highlighting" \
+for d in \
+    "${HOME}/.zsh/zsh-syntax-highlighting" \
         /usr/local/share/zsh-syntax-highlighting \
-        /usr/share/zsh-syntax-highlighting; do
-    if [[ -e "$p" ]]; then
-        export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$p/highlighters"
-        source "$p/zsh-syntax-highlighting.zsh"
+        /usr/share/zsh-syntax-highlighting;
+do
+    if [[ -e "${d}" ]]; then
+        export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="${d}/highlighters"
+        source "${d}/zsh-syntax-highlighting.zsh"
         break
     fi
 done
-
-## Enable additional zsh-completions
-fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Enable colored menu and scrolling completion in completion listings
 # This needs to be loaded before calling compinit.
@@ -128,10 +128,11 @@ setopt LIST_ROWS_FIRST
 setopt LIST_PACKED
 
 # Export LS_COLORS
-for p in \
-    /usr/local/bin/gdircolors /usr/bin/dircolors; do
-    if [[ -x "$p" ]]; then
-        eval "$("$p" -b)"
+for f in \
+    /usr/local/bin/gdircolors /usr/bin/dircolors;
+do
+    if [[ -x "${f}" ]]; then
+        eval "$("${f}" -b)"
         break
     fi
 done
@@ -206,7 +207,7 @@ bindkey -M menuselect '^s' history-incremental-search-forward
 ## History
 HISTSIZE=1000000
 SAVEHIST="$HISTSIZE"
-HISTFILE="$HOME/.zsh_history"
+HISTFILE="${HOME}/.zsh_history"
 
 # This option both imports new commands from the history file, and also causes
 # your typed commands to be appended to the history file (the latter is like
@@ -238,6 +239,8 @@ colors
 setopt PROMPT_SUBST
 
 autoload -Uz add-zsh-hook
+
+# Enable VCS info
 autoload -Uz vcs_info
 
 # Only enable for a few frequently used VCS tools
@@ -277,14 +280,13 @@ setopt INTERACTIVE_COMMENTS
 
 ## Terminal titles
 # https://wiki.archlinux.org/title/zsh#xterm_title
+# For expansion definition:
+# https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 function xterm_title_precmd () {
     print -Pn -- '\e]2;%m: %~\a'
 }
 
-case "$TERM" in
-    xterm*|rxvt*) add-zsh-hook -Uz precmd xterm_title_precmd ;;
-    *) ;;
-esac
+add-zsh-hook -Uz precmd xterm_title_precmd
 
 ## Use less as terminal pager
 export PAGER=less
