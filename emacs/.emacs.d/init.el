@@ -292,8 +292,9 @@ cleaning up `recentf-list'."
 
 (use-package tramp-sh
   :init
+  ;; https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
   (setq vc-ignore-dir-regexp
-        (format "%s\\|%s"
+        (format "\\(%s\\)\\|\\(%s\\)"
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp))
   :defer t)
@@ -545,7 +546,7 @@ followed by a space."
 
         (message "Project: %s %s" proj-name proj-root))))
 
-  (defun projectile-promote-lighter ()
+  (defun projectile-promote-mode-line ()
     "Show the project name right next to the major mode name in the
 mode line."
     (let ((entry (assq 'projectile-mode minor-mode-alist)))
@@ -574,7 +575,7 @@ mode line."
       (plist-put project 'test-command "go test -count=1 -race ./...")))
 
   (advice-add 'projectile-update-mode-line :after
-              #'projectile-promote-lighter)
+              #'projectile-promote-mode-line)
 
   (projectile-mode)
 
@@ -996,12 +997,10 @@ mode line."
        (setq-local indent-line-function #'insert-tab)))
 
   :mode
-  (("/\\.htaccess\\'"                      . conf-unix-mode)
-   ("/\\.tmux\\.conf\\'"                   . conf-unix-mode)
-   ("/storage-cm/\\(production\\|stage\\)" . conf-unix-mode)
-   ("/deploy/hosts"                        . conf-unix-mode)
-   ("/\\.aws/credentials\\'"               . conf-unix-mode)
-   ("/\\.properties\\'"                    . conf-javaprop-mode)))
+  (("/\\.htaccess\\'"        . conf-unix-mode)
+   ("/\\.tmux\\.conf\\'"     . conf-unix-mode)
+   ("/\\.aws/credentials\\'" . conf-unix-mode)
+   ("/\\.properties\\'"      . conf-javaprop-mode)))
 
 (use-package lisp-mode
   :preface
@@ -1193,12 +1192,9 @@ mode line."
 (use-package yaml-mode
   :ensure t
   :mode "/\\.config/yamllint/config\\'"
-  :mode "/pandora-users/rules/.*\\.rules\\'"
   :mode "/\\(group\\|host\\)_vars/"
   :mode "/\\.flyrc\\'"
   :mode "/\\.clang-format\\'"
-  :mode "/envoy.yaml.erb\\|/envoy-filter-chain.yaml.erb\\'"
-  :magic "#cloud-config"
   :defer t)
 
 (use-package terraform-mode
@@ -1290,9 +1286,7 @@ mode line."
   ;;   (set-face-attribute 'default nil :background "unspecified-bg"))
   )
 
-
 (when (display-graphic-p)
-
   (defsubst display-name (&optional frame)
     (pcase (sort (frame-monitor-attribute 'mm-size frame) '>)
       ('(599 340) 'lg-ultrafine-27)
@@ -1312,76 +1306,67 @@ mode line."
     (format "-*-Ubuntu Mono-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
             size))
 
-  (defconst default-font-size 12
+  (defsubst font-Hack (size)
+    (format "-*-Hack-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
+            size))
+
+  (defconst STHeiTi-size-map
+    `((,(font-Menlo 11)  . 14.0)
+      (,(font-Menlo 12)  . 14.0)
+      (,(font-Menlo 13)  . 16.0)
+      (,(font-Menlo 14)  . 16.0)
+      (,(font-Menlo 15)  . 18.0)
+      (,(font-Menlo 16)  . 20.0)
+      (,(font-Menlo 17)  . 20.0)
+      (,(font-Menlo 18)  . 22.0)
+      (,(font-Menlo 19)  . 22.0)
+      (,(font-Menlo 20)  . 24.0)
+      (,(font-Menlo 21)  . 26.0)
+      (,(font-Menlo 22)  . 26.0)
+      (,(font-SFMono 11) . 14.0)
+      (,(font-SFMono 12) . 16.0)
+      (,(font-SFMono 13) . 16.0)
+      (,(font-SFMono 14) . 18.0)
+      (,(font-SFMono 15) . 18.0)
+      (,(font-SFMono 16) . 20.0)
+      (,(font-SFMono 17) . 22.0)
+      (,(font-SFMono 18) . 22.0)
+      (,(font-SFMono 19) . 24.0)
+      (,(font-SFMono 20) . 24.0)
+      (,(font-SFMono 21) . 26.0)
+      (,(font-SFMono 22) . 28.0)
+      (,(font-Hack 11)   . 10.0)
+      (,(font-Hack 12)   . 12.0)
+      (,(font-Hack 13)   . 12.0)
+      (,(font-Hack 14)   . 14.0)
+      (,(font-Hack 15)   . 16.0)
+      (,(font-Hack 16)   . 16.0)
+      (,(font-Hack 17)   . 18.0)
+      (,(font-Hack 18)   . 18.0)
+      (,(font-Hack 19)   . 18.0)
+      (,(font-Hack 20)   . 20.0)
+      (,(font-Hack 21)   . 20.0)
+      (,(font-Hack 22)   . 20.0))
+    "Font mapping to corresponding STHeiTi size.")
+
+  (defconst default-font-size 14
     "Default font size")
 
-  (defconst font-size-map-STHeiTi
-    `((,(font-Menlo 11)      . 14.0)
-      (,(font-Menlo 12)      . 14.0)
-      (,(font-Menlo 13)      . 16.0)
-      (,(font-Menlo 14)      . 16.0)
-      (,(font-Menlo 15)      . 18.0)
-      (,(font-Menlo 16)      . 20.0)
-      (,(font-Menlo 17)      . 20.0)
-      (,(font-Menlo 18)      . 22.0)
-      (,(font-Menlo 19)      . 22.0)
-      (,(font-Menlo 20)      . 24.0)
-      (,(font-Menlo 21)      . 26.0)
-      (,(font-Menlo 22)      . 26.0)
-      (,(font-SFMono 11)     . 14.0)
-      (,(font-SFMono 12)     . 16.0)
-      (,(font-SFMono 13)     . 16.0)
-      (,(font-SFMono 14)     . 18.0)
-      (,(font-SFMono 15)     . 18.0)
-      (,(font-SFMono 16)     . 20.0)
-      (,(font-SFMono 17)     . 22.0)
-      (,(font-SFMono 18)     . 22.0)
-      (,(font-SFMono 19)     . 24.0)
-      (,(font-SFMono 20)     . 24.0)
-      (,(font-SFMono 21)     . 26.0)
-      (,(font-SFMono 22)     . 28.0)
-      (,(font-UbuntuMono 11) . 12.0)
-      (,(font-UbuntuMono 12) . 12.0)
-      (,(font-UbuntuMono 13) . 14.0)
-      (,(font-UbuntuMono 14) . 14.0)
-      (,(font-UbuntuMono 15) . 16.0)
-      (,(font-UbuntuMono 16) . 16.0)
-      (,(font-UbuntuMono 17) . 18.0)
-      (,(font-UbuntuMono 18) . 18.0)
-      (,(font-UbuntuMono 19) . 20.0)
-      (,(font-UbuntuMono 20) . 20.0)
-      (,(font-UbuntuMono 21) . 22.0)
-      (,(font-UbuntuMono 22) . 22.0))
-    "Font size mapping to STHeiTi that can align with the
-    corresponding font and size.")
-
-
-  (defun emacs-set-frame (&optional size)
+  (defun set-emacs-frame (&optional size)
     (interactive "nFont Size: ")
-    (setq size
-          (if size
-              (cond ((< size 11)
-                     (message "Use min font size 11")
-                     11)
-                    ((> size 22)
-                     (message "Use max font size 22")
-                     22)
-                    (t size))
-            (pcase (display-name nil)
-              ;; ('lg-ultrafine-27
-              ;;  15)
-              (_
-               default-font-size))))
+    (setq size (or size default-font-size))
+    (if (or (< size 11) (> size 22))
+        (user-error "Font size must be in the range [11, 22]"))
 
     ;; `default' face
-    (set-face-attribute 'default nil :font (font-Menlo size))
+    (set-face-attribute 'default nil :font (font-Hack size))
 
     (dolist (charset '(han cjk-misc bopomofo))
       (set-fontset-font t charset (font-spec :family "STHeiTi")))
 
     (setq face-font-rescale-alist
           `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
-                                         font-size-map-STHeiTi))
+                                         STHeiTi-size-map))
                              size))))
 
     (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
@@ -1389,16 +1374,10 @@ mode line."
     ;; `variable-pitch' face uses the same height as the `default'.
     ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
     (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)
+    (set-frame-parameter nil 'fullscreen 'maximized))
 
-
-    ;; It slows down Emacs startup
-    (set-frame-parameter nil 'fullscreen 'maximized)
-    )
-
-  (add-hook 'after-init-hook #'emacs-set-frame t)
-
-  (bind-key* "s-`" #'emacs-set-frame))
-
+  (add-hook 'after-init-hook #'set-emacs-frame t)
+  (bind-key* "s-`" #'set-emacs-frame))
 
 ;;
 ;; Global keybindings

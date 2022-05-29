@@ -269,6 +269,7 @@
         ('gnu/linux
          (list "gnome-terminal")))))
  '(tls-checktrust t)
+ '(tool-bar-mode nil)
  '(tramp-connection-timeout 15)
  '(tramp-default-method "ssh")
  '(tramp-use-ssh-controlmaster-options nil)
@@ -298,5 +299,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(aw-leading-char-face ((t (:inherit aw-leading-char-face :weight bold :height 3.0))))
- '(eglot-mode-line ((t (:inherit font-lock-constant-face :weight normal)))))
+ '(aw-leading-char-face ((t (:inherit aw-leading-char-face :weight bold :height 3.0)))))
