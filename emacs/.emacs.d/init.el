@@ -28,314 +28,14 @@
   (message "Loading %s (source)...done (%.3fs) (GC: %d)"
            custom-file elapsed gcs-done))
 
+;; Initialize package
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(require 'init-elpa)
+(require 'init-format)
+(require 'init-util)
 
 ;;
-;; Utility functions
-;;
-(defun save-buffer-file-name ()
-  "Show the full path file name in the minibuffer, and push it
-into the kill ring."
-  (interactive)
-  (if (not buffer-file-name)
-      (message "This buffer is not visiting a file on the disk")
-    (kill-new buffer-file-name)
-    (message "Copied '%s'" buffer-file-name)))
-
-(defun other-window-backward (&optional n)
-  "Select the previous window. It behaves like the `other-window'
-but in the reverse direction."
-  (interactive "P")
-  (other-window (- (prefix-numeric-value n))))
-
-(defun split-window-horizontally-evenly (&optional n)
-  "Split current window into N windows with the same width."
-  (interactive "P")
-  (setq n (if n (prefix-numeric-value n) 2))
-  (while (> n 1)
-    (split-window-right)
-    (setq n (1- n)))
-  (balance-windows))
-
-(defconst split-window-width 160)
-
-(defun my-split-window ()
-  "Split current window with the specified `split-window-width'."
-  (interactive)
-  (let ((n (/ (window-width) split-window-width)))
-    (if (< n 2)
-        (message "Only single window fits"))
-    (split-window-horizontally-evenly n)))
-
-(defun adjust-window-dimension-transient ()
-  "Adjust window dimension with transient."
-  (interactive)
-  (let ((echo-keystrokes nil))
-    (message "Adjust window dimension: {: shrink horizontally, }: enlarge horizontally, [: shrink vertically, ]: enlarge vertically, 0: balance windows")
-    (set-transient-map
-     (let ((map (make-sparse-keymap)))
-       (define-key map (kbd "{") #'shrink-window-horizontally)
-       (define-key map (kbd "}") #'enlarge-window-horizontally)
-       (define-key map (kbd "[") #'shrink-window)
-       (define-key map (kbd "]") #'enlarge-window)
-       (define-key map (kbd "0") #'balance-windows)
-       map)
-     t)))
-
-;; Code indent and format functions
-(defun indent-region-delete-whitespace (&optional beg end)
-  "Delete trailing whitespace and indent for selected region. If
-no region is activated, this will operate on the entire buffer."
-  (interactive
-   (progn
-     (barf-if-buffer-read-only)
-     (if (use-region-p)
-         (list (region-beginning) (region-end))
-       (list (point-min) (point-max)))))
-  (save-excursion
-    (unless (eq beg end)
-      (delete-trailing-whitespace beg end)
-      (indent-region beg end))))
-
-(defun format-buffer-exec (exec &rest opts)
-  "Format current buffer using external EXEC along with its
-OPTS. It returns numeric status code of the command execution
-result."
-  (let ((old-buf (current-buffer))
-        (fmt-buf "*Format Buffer Output*")
-        (coding-system-for-read 'utf-8)
-        (coding-system-for-write 'utf-8)
-        status)
-    (save-restriction
-      (widen)
-      (with-current-buffer (get-buffer-create fmt-buf)
-        (let ((inhibit-read-only t))
-          (erase-buffer)
-          (message "Formatting buffer using %s..." exec)
-          (with-current-buffer old-buf
-            (setq status
-                  (apply #'call-process-region
-                         (append
-                          (list nil nil exec nil fmt-buf nil) opts))))))
-      (if (zerop status)
-          (unwind-protect
-              (if (zerop (compare-buffer-substrings
-                          old-buf nil nil fmt-buf nil nil))
-                  (message "Buffer already formatted")
-                (let ((p (point)))
-                  (erase-buffer)
-                  (insert-buffer-substring fmt-buf)
-                  (goto-char p))
-                (message "Formatting buffer using %s...done" exec))
-            (let ((fmt-win (get-buffer-window fmt-buf)))
-              (if fmt-win (delete-window fmt-win))
-              (kill-buffer fmt-buf)))
-        (with-current-buffer fmt-buf
-          (let ((inhibit-read-only t))
-            (goto-char (point-min))
-            (insert (format "Command '%s %s'\n\n" exec (mapconcat 'identity opts " "))))
-          (special-mode)
-          (display-buffer fmt-buf)
-          (message "Failed to format buffer using %s" exec))))
-    status))
-
-(defun format-buffer-cmd ()
-  "Return command line for external tool used to format code if
-configured, or nil if not."
-  (cond
-   ((memq major-mode (list 'c-mode 'c++-mode))
-    (list "clang-format" "-style=file"))
-   ((equal major-mode 'nxml-mode)
-    (list "tidy" "-indent" "-wrap" "0" "-omit" "-quiet" "-utf8"))
-   ((equal major-mode 'python-mode)
-    (list "autopep8" "--max-line-length=100" "--aggressive" "-"))
-   ((equal major-mode 'json-mode)
-    (list "jq" "--monochrome-output" "--indent" "2" "."))
-   ((equal major-mode 'jsonnet-mode)
-    (list "jsonnetfmt" "-"))
-   ((equal major-mode 'terraform-mode)
-    (list "terraform" "fmt" "-no-color" "-"))
-   (t nil)))
-
-(defun format-buffer (&optional beg end)
-  "Format current buffer."
-  (interactive
-   (progn
-     (barf-if-buffer-read-only)
-     (if (use-region-p)
-         (list (region-beginning) (region-end))
-       (list (point-min) (point-max)))))
-  (let ((cmd (format-buffer-cmd)))
-    (if (and (not (use-region-p)) cmd)
-        (if (zerop (apply #'format-buffer-exec cmd))
-            (delete-trailing-whitespace))
-      (if indent-tabs-mode
-          (tabify beg end)
-        (untabify beg end))
-      (indent-region-delete-whitespace beg end))))
-
-;; Timestamp
-(defun insert-timestamp ()
-  "Insert the timestamp with selected format."
-  (interactive)
-  (insert (format-time-string
-           (completing-read "Timestamp format: "
-                            '("%m/%d/%y"
-                              "%H:%M:%S"
-                              "%m/%d/%y %H:%M:%S"
-                              "%a %b %d %H:%M:%S %Z %Y"))
-           (current-time))))
-
-(defun dump-into-file (data filename)
-  "Dump DATA to FILENAME."
-  (when (file-writable-p filename)
-    (with-temp-file filename
-      (insert (let (print-length) (prin1-to-string data))))))
-
-(defun load-from-file (filename)
-  "Load data from FILENAME."
-  (with-demoted-errors
-      "Error during file read: %S"
-    (when (file-exists-p filename)
-      (with-temp-buffer
-        (insert-file-contents filename)
-        ;; this will blow up if the contents of the file aren't
-        ;; lisp data structures
-        (read (buffer-string))))))
-
-
-;;
-;; ELPA packages
-;;
-(require 'package)
-
-(defconst package-no-https nil
-  "Use plain http when contacting ELPA repositories.")
-
-(defconst package-upgrade-check-interval 7200
-  "Interval to perform ELPA packages upgrade check.")
-
-(defconst package-upgrade-check-stamp
-  (expand-file-name "package-upgrade-check-stamp"
-                    user-emacs-directory)
-  "Filename that store the timestamp that last ELPA packages
-upgrade check is performed.")
-
-
-(let* ((no-https (or package-no-https
-                     (and (memq system-type '(windows-nt ms-dos))
-                          (not (gnutls-available-p)))))
-       (proto (if no-https "http" "https")))
-  (setcdr (assoc "gnu" package-archives)
-          (concat proto "://elpa.gnu.org/packages/")) ;; "://mirrors.163.com/elpa/gnu/"
-  (add-to-list 'package-archives
-               (cons "melpa"
-                     (concat proto "://melpa.org/packages/")) t))
-
-
-(advice-add 'package-installed-p :around
-            (lambda (func &rest args)
-              "Hide the bulit-in `org' and `project' in favor of
-the ELPA ones."
-              (let ((pkg (car args)))
-                (if (memq pkg '(org project))
-                    (assq pkg package-alist)
-                  (apply func args)))))
-
-(package-initialize)
-
-(unless package-archive-contents
-  (package-refresh-contents))
-
-(defun package-directory (name)
-  "Return the directory location that package NAME will be
-installed with the current version in ELPA
-`package-archive-contents'."
-  (let* ((pkg-desc (cadr (assq name package-archive-contents)))
-         (pkg-full-name (and pkg-desc
-                             (package-desc-full-name pkg-desc))))
-    (if pkg-full-name
-        (file-name-as-directory
-         (concat (file-name-as-directory package-user-dir)
-                 pkg-full-name)))))
-
-(defun package-update ()
-  "Return a list of packages that have new versions available."
-  (let (result)
-    (cl-flet ((get-version
-               (name where)
-               (let ((pkg (cadr (assq name where))))
-                 (when pkg
-                   (package-desc-version pkg)))))
-      (dolist (package (mapcar #'car package-alist))
-        (let ((in-archive (get-version package package-archive-contents)))
-          (when (and in-archive
-                     (version-list-< (get-version package package-alist)
-                                     in-archive))
-            (push (cadr (assq package package-archive-contents))
-                  result)))))
-    result))
-
-(defun package-do-upgrade ()
-  "Upgrade all ELPA packages to their latest versions."
-  (remove-hook 'package--post-download-archives-hook #'package-do-upgrade)
-  (let* ((packages (package-update))
-         (msg (mapconcat #'package-desc-full-name packages ", "))
-         (num (length packages))
-         (sfx (if (<= num 1) "" "s")))
-    (if (not packages)
-        (message "All packages are up to date")
-      (message "%d package%s available for upgrade: %s" num sfx msg)
-      (save-window-excursion
-        (dolist (package-desc packages)
-          (let ((new-package-full-name
-                 (package-desc-full-name package-desc))
-                (old-package-desc
-                 (cadr (assq (package-desc-name package-desc)
-                             package-alist))))
-            (message "Installing package ‘%s’..." new-package-full-name)
-            (package-install package-desc)
-            (message "Installing package ‘%s’...done" new-package-full-name)
-            (package-delete old-package-desc))))
-      (message "%d package%s upgraded: %s" num sfx msg))))
-
-(defun package-upgrade (&optional async)
-  "Refresh and upgrade all installed ELPA packages.
-Optional argument ASYNC specifies whether to perform the
-downloads in the background."
-  (interactive)
-  (message "Package refresh started at %s" (current-time-string))
-  (add-hook 'package--post-download-archives-hook  #'package-do-upgrade)
-  (package-refresh-contents async))
-
-(add-hook 'after-init-hook
-          (lambda ()
-            "Auto upgrade ELPA packages when idle for a while."
-            (run-with-idle-timer
-             600 t
-             (lambda ()
-               (let* ((now (round (float-time)))
-                      (last (or (load-from-file package-upgrade-check-stamp) 0))
-                      (elapsed (- now last)))
-                 (when (>= elapsed package-upgrade-check-interval)
-                   (package-upgrade t)
-                   (dump-into-file now package-upgrade-check-stamp)))))
-            (message "Check package upgrade every %ds"
-                     package-upgrade-check-interval)) t)
-
-
-;;
-;; Trash
-;;
-(when (and (equal system-type 'darwin)
-           (executable-find "trash"))
-  (defun system-move-file-to-trash (file)
-    "Use \"trash\" to move FILE to the MacOS Trash."
-    (call-process "trash" nil 0 nil
-                  file)))
-
-
-;;
-;; Bootstrap use-package
+;; Initialize use-package
 ;; https://github.com/jwiegley/use-package
 ;;
 (unless (package-installed-p 'use-package)
@@ -344,28 +44,9 @@ downloads in the background."
 (eval-when-compile
   (require 'use-package))
 
-
-;;
-;; Global keybindings
-;;
-(bind-key "C-x f"           #'save-buffer-file-name)
-(bind-key "C-x p"           #'other-window-backward)
-(bind-key "C-c t"           #'insert-timestamp)
-(bind-key "<f12>"           #'format-buffer)
-(bind-key "<C-M-backspace>" #'backward-kill-sexp)
-(bind-key "C-x 9"           #'adjust-window-dimension-transient)
-
-(when (display-graphic-p) (unbind-key "C-z"))
-
-
 ;;
 ;; Packages configurations
 ;;
-(use-package gnu-elpa-keyring-update
-  :disabled
-  :ensure t
-  :after package)
-
 (use-package diminish
   :ensure t
   :commands diminish)
@@ -849,7 +530,7 @@ followed by a space."
       (let ((proj-name (projectile-project-name))
             (proj-root (projectile-project-root)))
 
-        (cond 
+        (cond
          ((string-prefix-p "/Users/yuezhu/Code/go/" proj-root)
           (setenv "GO111MODULE" "on")
           (setenv "GOPATH" "/Users/yuezhu/Code/go/")
@@ -937,7 +618,7 @@ mode line."
                  (proj-root (expand-file-name (cdr proj))))
 
             (message "Project: %s %s" proj-name proj-root)
-            (cond 
+            (cond
              ((string-prefix-p "/Users/yuezhu/Code/go/" proj-root)
               (setenv "GO111MODULE" "on")
               (setenv "GOPATH" "/Users/yuezhu/Code/go/"))))))))
@@ -1185,23 +866,6 @@ mode line."
        ;; make auto-fill work for normal paragraphs in `org-mode'
        (setq-local comment-auto-fill-only-comments nil)))
   :defer t)
-
-(use-package org-superstar
-  :disabled
-  :ensure t
-  :after org
-  :hook
-  (org-mode . org-superstar-mode)
-  :defer t)
-
-(use-package org-plus-contrib
-  :disabled
-  :ensure t
-  :no-require t
-  :pin org
-  :after org
-  :config
-  (require 'ox-confluence))
 
 (use-package org-make-toc
   :ensure t
@@ -1735,6 +1399,18 @@ mode line."
 
   (bind-key* "s-`" #'emacs-set-frame))
 
+
+;;
+;; Global keybindings
+;;
+(bind-key "C-x f"           #'save-buffer-file-name)
+(bind-key "C-x p"           #'other-window-backward)
+(bind-key "C-c t"           #'insert-timestamp)
+(bind-key "<f12>"           #'format-buffer)
+(bind-key "<C-M-backspace>" #'backward-kill-sexp)
+(bind-key "C-x 9"           #'adjust-window-dimension-transient)
+
+(when (display-graphic-p) (unbind-key "C-z"))
 
 ;; Display elapsed time
 ;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
