@@ -1384,10 +1384,9 @@ mode line."
 ;;
 (bind-key "C-x f"           #'save-buffer-file-name)
 (bind-key "C-x p"           #'other-window-backward)
-(bind-key "C-c t"           #'insert-timestamp)
+(bind-key "C-x 9"           #'adjust-window-dimension-transient)
 (bind-key "<f12>"           #'format-buffer)
 (bind-key "<C-M-backspace>" #'backward-kill-sexp)
-(bind-key "C-x 9"           #'adjust-window-dimension-transient)
 
 (when (display-graphic-p) (unbind-key "C-z"))
 
