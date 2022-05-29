@@ -71,7 +71,7 @@
  '(display-time-12hr-format t)
  '(display-time-day-and-date nil)
  '(display-time-mode t)
- '(dumb-jump-prefer-searcher 'rg)
+ '(dumb-jump-force-searcher 'rg)
  '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eglot-autoshutdown t)
