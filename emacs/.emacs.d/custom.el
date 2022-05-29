@@ -10,8 +10,6 @@
  '(avy-case-fold-search t)
  '(aw-scope 'frame)
  '(blink-cursor-mode nil)
- '(calendar-latitude 42.44817)
- '(calendar-longitude -71.224716)
  '(column-number-mode t)
  '(comint-buffer-maximum-size 16384)
  '(comint-completion-addsuffix t)
@@ -33,8 +31,6 @@
  '(compilation-scroll-output t)
  '(confirm-kill-emacs 'yes-or-no-p)
  '(custom-buffer-done-kill t)
- '(custom-safe-themes
-   '("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(diff-hl-draw-borders nil)
@@ -92,11 +88,8 @@
  '(find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
  '(flycheck-disabled-checkers
    '(emacs-lisp-checkdoc ruby-rubocop sh-bash sh-posix-dash sh-posix-bash sh-zsh yaml-jsyaml yaml-ruby go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert go-staticcheck python-pycompile python-pyright python-mypy json-jsonlint json-python-json c/c++-gcc c/c++-cppcheck))
- '(flycheck-rubocoprc "~/.rubocop.yml")
  '(flyspell-sort-corrections t)
  '(frame-resize-pixelwise t)
- '(git-commit-setup-hook
-   '(git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message))
  '(git-link-use-commit t)
  '(global-auto-revert-mode t)
  '(global-auto-revert-non-file-buffers t)
@@ -260,13 +253,11 @@
  '(scroll-error-top-bottom t)
  '(search-highlight t)
  '(select-enable-clipboard t)
- '(selectrum-fix-vertical-window-height t)
  '(sh-basic-offset 4)
  '(show-paren-delay 0)
  '(show-paren-mode t)
  '(show-paren-style 'parentheses)
  '(size-indication-mode t)
- '(sp-base-key-bindings 'paredit)
  '(tab-width 4)
  '(terminal-here-terminal-command
    '(lambda
@@ -278,7 +269,6 @@
         ('gnu/linux
          (list "gnome-terminal")))))
  '(tls-checktrust t)
- '(tool-bar-mode nil)
  '(tramp-connection-timeout 15)
  '(tramp-default-method "ssh")
  '(tramp-use-ssh-controlmaster-options nil)
@@ -297,8 +287,6 @@
  '(use-package-enable-imenu-support t)
  '(use-package-verbose t)
  '(vertico-count 20)
- '(vterm-always-compile-module t)
- '(vterm-max-scrollback 100000)
  '(which-func-unknown "n/a" t)
  '(which-function-mode t)
  '(whitespace-line-column 100)

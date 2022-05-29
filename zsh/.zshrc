@@ -28,8 +28,9 @@ for p in \
      /usr/local/opt/curl/bin \
      /usr/local/opt/terraform@0.12/bin \
      /usr/local/opt/ruby/bin \
-     "$GOROOT/bin" \
-     "$HOME/bin";
+     "${GOROOT}/bin" \
+     "${HOME}/bin" \
+     "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
     if [[ -d "$p" ]]; then
         path=("$p" $path)

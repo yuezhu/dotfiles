@@ -366,15 +366,12 @@ downloads in the background."
   :ensure t
   :after package)
 
-
 (use-package diminish
   :ensure t
   :commands diminish)
 
-
 (use-package uniquify
   :defer t)
-
 
 (use-package hl-line
   :hook ((dired-mode
@@ -386,13 +383,11 @@ downloads in the background."
          . hl-line-mode)
   :defer t)
 
-
 (use-package goto-addr
   :hook
   (prog-mode . goto-address-prog-mode)
   ((text-mode magit-process-mode) . goto-address-mode)
   :defer t)
-
 
 (use-package simple
   :hook ((org-mode
@@ -408,23 +403,19 @@ downloads in the background."
               (visual-line-mode -1))))
   :defer t)
 
-
 (use-package xref
   :commands (xref-pulse-momentarily
              xref-push-marker-stack))
 
-
 (use-package subword
   :diminish
   :defer t)
-
 
 (use-package ialign
   :ensure t
   :bind ("C-c |" . ialign)
   :bind (:map ialign-minibuffer-keymap
               ("C-c =" . ialign-increment-spacing)))
-
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -438,7 +429,6 @@ downloads in the background."
                  "GOROOT"))
     (add-to-list #'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
-
 
 (use-package winner
   :unless noninteractive
@@ -468,12 +458,10 @@ downloads in the background."
   :config
   (winner-mode))
 
-
 (use-package midnight
   :defer 2
   :config
   (midnight-mode))
-
 
 (use-package recentf
   :preface
@@ -528,7 +516,6 @@ cleaning up `recentf-list'."
   ;; (run-at-time t 300 #'recentf-maybe-save-list)
   )
 
-
 (use-package whitespace
   :bind (("C-c w m" . whitespace-mode)
          ("C-c w r" . whitespace-report)
@@ -543,15 +530,12 @@ cleaning up `recentf-list'."
           yaml-mode)
          . whitespace-mode))
 
-
 (use-package menu-bar
   :config
   (menu-bar-mode (if window-system 1 -1)))
 
-
 (use-package ispell
   :bind ("C-c i w" . ispell-word))
-
 
 (use-package flyspell
   :bind ("C-c i b" . flyspell-buffer)
@@ -568,13 +552,11 @@ cleaning up `recentf-list'."
   (dolist (mode '(text-mode org-mode)) ;; need to specify all derived modes
     (put mode 'flyspell-mode-predicate #'flyspell-ignore-http-and-https)))
 
-
 (use-package flyspell-correct
   :ensure t
   :after flyspell
   :bind (:map flyspell-mode-map
               ("C-c i c" . flyspell-correct-wrapper)))
-
 
 (use-package info
   ;; :init
@@ -606,17 +588,14 @@ cleaning up `recentf-list'."
      ((> (buffer-size) 1000000) (format "%7.3fM" (/ (buffer-size) 1048576.0)))
      (t (format "%8d" (buffer-size))))))
 
-
 (use-package ibuffer-vc
   :ensure t
   :after ibuffer)
-
 
 (use-package hideshow
   :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
   :defer t)
-
 
 (use-package diff-hl
   :ensure t
@@ -630,7 +609,6 @@ cleaning up `recentf-list'."
   (magit-post-refresh . diff-hl-magit-post-refresh)
   :defer t)
 
-
 (use-package tramp-sh
   :init
   (setq vc-ignore-dir-regexp
@@ -639,18 +617,15 @@ cleaning up `recentf-list'."
                 tramp-file-name-regexp))
   :defer t)
 
-
 (use-package rg
   :ensure t
   :bind ("C-c s" . rg-menu))
-
 
 (use-package dumb-jump
   :ensure t
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :defer t)
-
 
 (use-package hippie-exp
   :bind ("M-/" . hippie-expand)
@@ -662,7 +637,6 @@ expanding. Though not all, this is effective with some expand
 functions, eg., `try-expand-all-abbrevs'"
                 (let ((case-fold-search nil))
                   (apply func args)))))
-
 
 (use-package dired
   :preface
@@ -725,13 +699,11 @@ functions, eg., `try-expand-all-abbrevs'"
     ;; `insert-directory-program'.
     ))
 
-
 (use-package diredfl
   :ensure t
   :hook
   (dired-mode . diredfl-mode)
   :defer t)
-
 
 (use-package dired-x
   :disabled
@@ -739,19 +711,10 @@ functions, eg., `try-expand-all-abbrevs'"
   (dired-mode . dired-omit-mode)
   :defer t)
 
-
 (use-package flycheck
   :ensure t
   :hook (prog-mode . flycheck-mode)
   :defer t)
-
-
-(use-package flycheck-golangci-lint
-  :disabled ;; 06/01/21 use LSP diagnostic
-  :ensure t
-  :after flycheck
-  :hook (go-mode . flycheck-golangci-lint-setup))
-
 
 (use-package company
   :ensure t
@@ -787,13 +750,11 @@ followed by a space."
               ("C-n" . company-select-next)
               ("C-f" . company-search-toggle-filtering)))
 
-
 (use-package company-quickhelp
   :ensure t
   :after company
   :config
   (company-quickhelp-mode))
-
 
 (use-package company-elisp
   :after (company lisp-mode)
@@ -802,7 +763,6 @@ followed by a space."
    . (lambda ()
        (make-local-variable 'company-backends)
        (add-to-list 'company-backends 'company-elisp))))
-
 
 (use-package company-shell
   :disabled ;; 04/20/20 completion is very slow
@@ -814,7 +774,6 @@ followed by a space."
        (make-local-variable 'company-backends)
        (add-to-list 'company-backends 'company-shell))))
 
-
 (use-package company-lua
   :disabled
   :ensure t
@@ -824,18 +783,6 @@ followed by a space."
    . (lambda ()
        (make-local-variable 'company-backends)
        (add-to-list 'company-backends 'company-lua))))
-
-
-(use-package company-ansible
-  :disabled ;; 06/08/20 need to config
-  :ensure t
-  :after (company yaml-mode)
-  :hook
-  (yaml-mode
-   . (lambda ()
-       (make-local-variable 'company-backends)
-       (add-to-list 'company-backends 'company-ansible))))
-
 
 (use-package eglot
   :disabled
@@ -863,7 +810,6 @@ followed by a space."
   :config
   (add-to-list 'eglot-stay-out-of 'flymake-diagnostic-functions))
 
-
 ;; https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (use-package lsp-mode
   :ensure t
@@ -888,13 +834,11 @@ followed by a space."
 
   :defer t)
 
-
 (use-package ccls
   :disabled ;; 04/25/21 slows down emacs when indexing ceph
   :ensure t
   :after (lsp-mode c-mode c++-mode)
   :defer t)
-
 
 (use-package projectile
   :ensure t
@@ -958,7 +902,6 @@ mode line."
   ;; on the mode-line cannot properly show the project name.
   (projectile-update-mode-line))
 
-
 (use-package project
   :disabled
   :ensure t
@@ -1007,7 +950,6 @@ mode line."
               ("r" . project-counsel-rg)
               ("p" . project-switch-project-dired)))
 
-
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
@@ -1019,11 +961,9 @@ mode line."
           protobuf-mode)
          . yas-minor-mode))
 
-
 (use-package yasnippet-snippets
   :ensure t
   :after yasnippet)
-
 
 (use-package abbrev
   :diminish
@@ -1043,7 +983,6 @@ mode line."
   (if (file-exists-p abbrev-file-name)
       (quietly-read-abbrev-file)))
 
-
 (use-package imenu
   :preface
   (defun imenu-rescan ()
@@ -1060,7 +999,6 @@ mode line."
     markdown-mode)
    . imenu-add-menubar-index))
 
-
 (use-package crux
   :ensure t
   :bind (("C-c c t" . crux-transpose-windows)
@@ -1068,17 +1006,14 @@ mode line."
          ("C-c c r" . crux-rename-file-and-buffer)
          ("C-c c d" . crux-delete-file-and-buffer)))
 
-
 (use-package vertico
   :ensure t
   :hook (after-init . vertico-mode))
-
 
 (use-package orderless
   :ensure t
   :after vertico
   :custom (completion-styles '(substring orderless)))
-
 
 (use-package consult
   :ensure t
@@ -1120,16 +1055,13 @@ mode line."
                   (let ((completion-ignore-case t))
                     (apply func args))))))
 
-
 (use-package ace-window
   :ensure t
   :bind ("M-o" . ace-window))
 
-
 (use-package ace-link
   :ensure t
   :bind ("C-c j a" . ace-link-addr))
-
 
 (use-package avy
   :ensure t
@@ -1139,7 +1071,6 @@ mode line."
          ("C-c j j" . avy-resume))
   :bind (:map isearch-mode-map
               ("C-'" . avy-isearch)))
-
 
 (use-package compile
   :defer t
@@ -1165,7 +1096,6 @@ mode line."
   (add-hook 'compilation-finish-functions
             #'delete-compile-windows-if-success))
 
-
 (use-package comint
   :preface
   (defun comint-output-read-only (&optional _string)
@@ -1184,7 +1114,6 @@ mode line."
 
   :defer t)
 
-
 (use-package term
   :hook (term-mode
          . (lambda ()
@@ -1193,17 +1122,14 @@ mode line."
              (auto-fill-mode -1)))
   :defer t)
 
-
 (use-package terminal-here
   :ensure t
   :if window-system
   :defer t)
 
-
 (use-package cwarn
   :commands cwarn-mode
   :diminish)
-
 
 (use-package ps-print
   :preface
@@ -1250,7 +1176,6 @@ mode line."
     ;;       ps-font-family 'Menlo)
     )))
 
-
 (use-package org
   :ensure t
   :pin gnu
@@ -1261,7 +1186,6 @@ mode line."
        (setq-local comment-auto-fill-only-comments nil)))
   :defer t)
 
-
 (use-package org-superstar
   :disabled
   :ensure t
@@ -1269,7 +1193,6 @@ mode line."
   :hook
   (org-mode . org-superstar-mode)
   :defer t)
-
 
 (use-package org-plus-contrib
   :disabled
@@ -1280,36 +1203,24 @@ mode line."
   :config
   (require 'ox-confluence))
 
-
 (use-package org-make-toc
   :ensure t
   :after org
   :hook (org-mode . org-make-toc-mode))
 
-
 (use-package ox-gfm
   :ensure t
   :after org)
 
-
 (use-package htmlize
   :ensure t
   :defer t)
-
 
 (use-package markdown-mode
   :ensure t
   :mode (("\\.md\\'"       . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
   :hook (markdown-mode . markdown-toc-mode))
-
-
-;; 04/28/20 required by `markdown-mode' to edit code block with corresponding
-;; language major mode enabled.
-(use-package edit-indirect
-  :ensure t
-  :defer t)
-
 
 (use-package markdown-toc
   :ensure t
@@ -1320,7 +1231,6 @@ mode line."
        (add-hook 'before-save-hook #'markdown-toc-refresh-toc t t)))
   :defer t)
 
-
 (use-package paredit
   :ensure t
   :diminish
@@ -1328,28 +1238,18 @@ mode line."
   :bind (:map emacs-lisp-mode-map ("<return>" . paredit-newline))
   :hook ((emacs-lisp-mode lisp-interaction lisp-mode) . enable-paredit-mode))
 
-
 (use-package aggressive-indent
   :ensure t
   :diminish
   :hook (emacs-lisp-mode . aggressive-indent-mode))
 
-
 (use-package rainbow-mode
   :ensure t
   :defer t)
 
-
 (use-package rainbow-delimiters
   :ensure t
   :hook ((prog-mode ielm-mode) . rainbow-delimiters-mode))
-
-
-(use-package highlight-numbers
-  :disabled
-  :ensure t
-  :hook (prog-mode . highlight-numbers-mode))
-
 
 (use-package highlight-escape-sequences
   :ensure t
@@ -1361,7 +1261,6 @@ mode line."
   (push `(json-mode . ,hes-js-escape-sequence-re) hes-mode-alist)
   (push `(enh-ruby-mode . ,hes-ruby-escape-sequence-keywords) hes-mode-alist))
 
-
 (use-package highlight-indent-guides
   :diminish
   :ensure t
@@ -1369,18 +1268,15 @@ mode line."
   (setq highlight-indent-guides-method 'character)
   :hook ((yaml-mode json-mode) . highlight-indent-guides-mode))
 
-
 (use-package git-link
   :ensure t
   :bind (("C-c g l" . git-link)
          ("C-c g c" . git-link-commit)
          ("C-c g h" . git-link-homepage)))
 
-
 (use-package magit
   :ensure t
   :defer t)
-
 
 ;; Loaded by something else
 (use-package eldoc
@@ -1390,22 +1286,12 @@ mode line."
   :config
   (global-eldoc-mode))
 
-
 (use-package which-key
   :ensure t
   :diminish
   :defer 2
   :config
   (which-key-mode))
-
-
-(use-package gnus
-  :init
-  (setq gnus-select-method '(nntp "news.gmane.io"))
-  (setq gnus-parameters '(("gmane\\..*" (display . all))))
-  (setq gnus-interactive-exit 'quiet)
-  :defer t)
-
 
 (use-package persistent-scratch
   :disabled ;; 12/18/19 it slows down Emacs startup
@@ -1417,11 +1303,9 @@ mode line."
   (with-demoted-errors "Error: %S"
     (persistent-scratch-setup-default)))
 
-
 (use-package unfill
   :ensure t
   :bind ([remap fill-paragraph] . unfill-toggle))
-
 
 (use-package prog-mode
   :hook
@@ -1433,11 +1317,9 @@ mode line."
 
   :defer t)
 
-
 (use-package display-fill-column-indicator
   :hook (prog-mode . display-fill-column-indicator-mode)
   :defer t)
-
 
 (use-package conf-mode
   :hook
@@ -1456,7 +1338,6 @@ mode line."
    ("/deploy/hosts"                        . conf-unix-mode)
    ("/\\.aws/credentials\\'"               . conf-unix-mode)
    ("/\\.properties\\'"                    . conf-javaprop-mode)))
-
 
 (use-package lisp-mode
   :preface
@@ -1491,10 +1372,8 @@ mode line."
   (makefile-mode . (lambda () (setq-local indent-tabs-mode t)))
   :defer t)
 
-
 (use-package sh-script
   :defer t)
-
 
 (use-package cc-mode
   :bind
@@ -1544,17 +1423,14 @@ mode line."
      (c-special-indent-hook . c-gnu-impose-minimum)
      (c-block-comment-prefix . ""))))
 
-
 (use-package python
   :interpreter ("python" . python-mode)
   :mode ("\\.pyx?\\'" . python-mode)
   :defer t)
 
-
 (use-package rpm-spec-mode
   :ensure t
   :defer t)
-
 
 (use-package nxml-mode
   :hook
@@ -1576,13 +1452,11 @@ mode line."
   :config
   (require 'sgml-mode))
 
-
 (use-package applescript-mode
   :ensure t
   :bind (:map as-mode-map
               ("<tab>" . tab-to-tab-stop))
   :defer t)
-
 
 (use-package js
   :if (>= emacs-major-version 27)
@@ -1590,12 +1464,10 @@ mode line."
   :mode ("\\.jsx?\\'" . js-jsx-mode)
   :defer t)
 
-
 (use-package ruby-mode
   :disabled
   :interpreter "ruby"
   :defer t)
-
 
 (use-package enh-ruby-mode
   :ensure t
@@ -1605,19 +1477,16 @@ mode line."
   (enh-ruby-mode . (lambda () (setq-local tab-width 2)))
   :defer t)
 
-
 (use-package rspec-mode
   :ensure t
   :diminish
   :defer t)
-
 
 (use-package lua-mode
   :ensure t
   :interpreter ("lua" . lua-mode)
   :mode "\\.lua\\.erb\\'"
   :defer t)
-
 
 (use-package go-mode
   :ensure t
@@ -1633,35 +1502,29 @@ mode line."
 
   :defer t)
 
-
 (use-package go-rename
   :ensure t
   :after go-mode)
-
 
 (use-package vcl-mode
   :ensure t
   :mode "\\.vcl\\.erb\\'"
   :defer t)
 
-
 (use-package vimrc-mode
   :ensure t
   :defer t)
-
 
 (use-package systemd
   :ensure t
   :magic ("\\[Unit\\]" . systemd-mode)
   :defer t)
 
-
 (use-package upstart-mode
   :load-path "lisp/upstart-mode"
   :pin manual
   :commands upstart-mode
   :mode "\\.upstart\\'")
-
 
 (use-package yaml-mode
   :ensure t
@@ -1674,12 +1537,10 @@ mode line."
   :magic "#cloud-config"
   :defer t)
 
-
 (use-package terraform-mode
   :ensure t
   :hook (terraform-mode . turn-off-auto-fill)
   :defer t)
-
 
 (use-package protobuf-mode
   :ensure t
@@ -1693,40 +1554,15 @@ mode line."
 
   :defer t)
 
-
-(use-package plantuml-mode
-  :disabled ;; 01/26/21 function completely broken
-  :ensure t
-  :preface
-  (defun plantuml-preview-other-window ()
-    "Show `plantuml-preview-buffer' in another window, and reuse
-that window if it exists."
-    (interactive)
-    (message "Rendering PlantUML...")
-    (let ((window (get-buffer-window
-                   plantuml-preview-buffer)))
-      (if window (delete-window window)))
-    (select-window (split-window-horizontally))
-    (plantuml-preview 1)
-    (switch-to-buffer plantuml-preview-buffer)
-    (message "Rendering PlantUML...done"))
-  :bind (:map plantuml-mode-map
-              ("C-c C-c" . plantuml-preview-other-window))
-  :mode "\\.puml\\'"
-  :defer t)
-
-
 (use-package json-mode
   :ensure t
   :hook
   (json-mode . (lambda () (setq-local tab-width 2)))
   :defer t)
 
-
 (use-package ovpn-mode
   :ensure t
   :defer t)
-
 
 (use-package jsonnet-mode
   :ensure t
@@ -1740,21 +1576,17 @@ that window if it exists."
   (unbind-key "C-c C-f" jsonnet-mode-map)
   (unbind-key "C-c C-r" jsonnet-mode-map))
 
-
 (use-package jinja2-mode
   :ensure t
   :defer t)
-
 
 (use-package dockerfile-mode
   :ensure t
   :defer t)
 
-
 (use-package syslog-mode
   :ensure t
   :mode "\\`/var/log/\\(syslog\\|messages\\|system\\.log\\)\\'")
-
 
 (use-package ssh-config-mode
   :ensure t
@@ -1764,20 +1596,9 @@ that window if it exists."
    . (lambda ()
        (setq-local indent-line-function #'indent-relative))))
 
-
 (use-package cmake-mode
   :ensure t
   :defer t)
-
-
-(use-package vterm
-  :disabled
-  :ensure t
-  :defer t
-  :bind (:map vterm-mode-map
-              ;; https://github.com/akermu/emacs-libvterm/issues/135
-              ("C-g" . vterm--self-insert)))
-
 
 (use-package zenburn-theme
   :ensure t
@@ -1793,7 +1614,6 @@ that window if it exists."
   ;;   '(eglot-mode-line ((t (:inherit font-lock-constant-face :weight normal))))))
   )
 
-
 (use-package color-theme-sanityinc-tomorrow
   :disabled
   :ensure t
@@ -1805,19 +1625,6 @@ that window if it exists."
   ;; (unless (display-graphic-p)
   ;;   (set-face-attribute 'default nil :background "unspecified-bg"))
   )
-
-
-(use-package default-text-scale
-  :disabled
-  :ensure t
-  :if window-system
-  :bind (("s--" . default-text-scale-decrease)
-         ("s-=" . default-text-scale-increase)
-         ("s-0" . default-text-scale-reset)
-         ("<C-wheel-down>" . default-text-scale-decrease)
-         ("<C-wheel-up>"   . default-text-scale-increase)
-         ("<C-mouse-4>"    . default-text-scale-decrease)
-         ("<C-mouse-5>"    . default-text-scale-increase)))
 
 
 (when (display-graphic-p)
@@ -1841,7 +1648,7 @@ that window if it exists."
     (format "-*-Ubuntu Mono-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
             size))
 
-  (defconst default-font-size 14
+  (defconst default-font-size 12
     "Default font size")
 
   (defconst font-size-map-STHeiTi
