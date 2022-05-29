@@ -51,6 +51,14 @@
   :ensure t
   :commands diminish)
 
+(use-package isearch
+  :no-require t
+  :bind (:map isearch-mode-map
+              ;; DEL during isearch should edit the search string, not jump
+              ;; back to the previous result
+              ;; https://github.com/purcell/emacs.d/blob/b484cada4356803d0ecb063d33546835f996fefe/lisp/init-isearch.el#L14
+              ([remap isearch-delete-char] . isearch-del-char)))
+
 (use-package uniquify
   :defer t)
 
