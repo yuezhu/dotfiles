@@ -6,6 +6,7 @@
 
 (setq tool-bar-mode nil)
 (setq scroll-bar-mode nil)
+(setq menu-bar-mode 1)
 (setq frame-title-format
       '((:eval (or buffer-file-name (buffer-name)))
         (:eval (if (buffer-modified-p) " * " " - "))

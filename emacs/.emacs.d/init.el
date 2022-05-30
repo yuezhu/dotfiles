@@ -219,10 +219,6 @@ cleaning up `recentf-list'."
           yaml-mode)
          . whitespace-mode))
 
-(use-package menu-bar
-  :config
-  (menu-bar-mode (if window-system 1 -1)))
-
 (use-package ispell
   :bind ("C-c i w" . ispell-word))
 
@@ -540,11 +536,9 @@ followed by a space."
             (proj-root (projectile-project-root)))
 
         (cond
-         ((string-prefix-p "/Users/yuezhu/Code/go/" proj-root)
+         ((string-prefix-p (expand-file-name "~/go") proj-root)
           (setenv "GO111MODULE" "on")
-          (setenv "GOPATH" "/Users/yuezhu/Code/go/")
-          ;; (with-eval-after-load 'lsp-mode
-          ;;   (setq-local lsp-enable-file-watchers nil))
+          (setenv "GOPATH" (expand-file-name "~/go"))
           (setq-local projectile-project-type 'go)
           (setq-local projectile-project-compilation-dir
                       (file-name-directory (string-trim-left
@@ -591,54 +585,6 @@ mode line."
   ;; loading is deferred as specified by the `:defer', the projectile lighter
   ;; on the mode-line cannot properly show the project name.
   (projectile-update-mode-line))
-
-(use-package project
-  :disabled
-  :ensure t
-  :pin gnu
-  :preface
-  (defun project-switch-project-dired ()
-    "Switch to another project, and open a Dired buffer on its
-    root directory."
-    (interactive)
-    (let ((default-directory (project-prompt-project-dir))
-          (project-current-inhibit-prompt t))
-      (call-interactively #'project-dired)))
-
-  (defun project-counsel-rg ()
-    "Call `counsel-rg' within the current project if available."
-    (interactive)
-    (let ((proj (project-current)))
-      (if (not proj)
-          (counsel-rg nil default-directory)
-        (counsel-rg nil (expand-file-name (cdr proj))
-                    nil (format "rg (%s): "
-                                (file-name-nondirectory (directory-file-name
-                                                         (cdr proj))))))))
-
-  (defun project-set-env ()
-    "Set environment based on the current project."
-    (unless (file-remote-p default-directory)
-      (let ((proj (project-current)))
-        (if (not proj)
-            (message "Project: unavailable")
-          (let* ((proj-name (file-name-nondirectory (directory-file-name
-                                                     (cdr proj))))
-                 (proj-root (expand-file-name (cdr proj))))
-
-            (message "Project: %s %s" proj-name proj-root)
-            (cond
-             ((string-prefix-p "/Users/yuezhu/Code/go/" proj-root)
-              (setenv "GO111MODULE" "on")
-              (setenv "GOPATH" "/Users/yuezhu/Code/go/"))))))))
-
-  :hook
-  (find-file . project-set-env)
-
-  :bind-keymap ("C-c p" . project-prefix-map)
-  :bind (:map project-prefix-map
-              ("r" . project-counsel-rg)
-              ("p" . project-switch-project-dired)))
 
 (use-package yasnippet
   :ensure t
@@ -954,7 +900,6 @@ mode line."
 ;; Loaded by something else
 (use-package eldoc
   :diminish
-  :ensure t
   :defer 2
   :config
   (global-eldoc-mode))
@@ -1369,19 +1314,21 @@ mode line."
     ;; `default' face
     (set-face-attribute 'default nil :font (font-Hack size))
 
-    (dolist (charset '(han cjk-misc bopomofo))
-      (set-fontset-font t charset (font-spec :family "STHeiTi")))
+    (when (equal system-type 'darwin)
+      (dolist (charset '(han cjk-misc bopomofo))
+        (set-fontset-font t charset (font-spec :family "STHeiTi")))
 
-    (setq face-font-rescale-alist
-          `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
-                                         STHeiTi-size-map))
-                             size))))
+      (setq face-font-rescale-alist
+            `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
+                                           STHeiTi-size-map))
+                               size))))
 
-    (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
+      (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
 
-    ;; `variable-pitch' face uses the same height as the `default'.
-    ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
-    (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)
+      ;; `variable-pitch' face uses the same height as the `default'.
+      ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
+      (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0))
+
     (set-frame-parameter nil 'fullscreen 'maximized))
 
   (add-hook 'after-init-hook #'set-emacs-frame t)
