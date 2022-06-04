@@ -649,7 +649,9 @@ mode line."
 (use-package orderless
   :ensure t
   :after vertico
-  :custom (completion-styles '(substring orderless)))
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package consult
   :ensure t
