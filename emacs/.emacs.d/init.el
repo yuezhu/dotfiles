@@ -653,6 +653,14 @@ mode line."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
+(use-package marginalia
+  :ensure t
+  :after vertico
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode))
+
 (use-package consult
   :ensure t
   :bind (("C-c TAB"                  . consult-imenu)
@@ -1266,8 +1274,7 @@ mode line."
             size))
 
   (defconst STHeiTi-size-map
-    `((,(font-Menlo 11)  . 14.0)
-      (,(font-Menlo 12)  . 14.0)
+    `((,(font-Menlo 12)  . 14.0)
       (,(font-Menlo 13)  . 16.0)
       (,(font-Menlo 14)  . 16.0)
       (,(font-Menlo 15)  . 18.0)
@@ -1278,19 +1285,17 @@ mode line."
       (,(font-Menlo 20)  . 24.0)
       (,(font-Menlo 21)  . 26.0)
       (,(font-Menlo 22)  . 26.0)
-      (,(font-SFMono 11) . 14.0)
-      (,(font-SFMono 12) . 16.0)
-      (,(font-SFMono 13) . 16.0)
-      (,(font-SFMono 14) . 18.0)
-      (,(font-SFMono 15) . 18.0)
-      (,(font-SFMono 16) . 20.0)
-      (,(font-SFMono 17) . 22.0)
-      (,(font-SFMono 18) . 22.0)
-      (,(font-SFMono 19) . 24.0)
-      (,(font-SFMono 20) . 24.0)
-      (,(font-SFMono 21) . 26.0)
-      (,(font-SFMono 22) . 28.0)
-      (,(font-Hack 11)   . 10.0)
+      (,(font-SFMono 12) . 12.0)
+      (,(font-SFMono 13) . 12.0)
+      (,(font-SFMono 14) . 14.0)
+      (,(font-SFMono 15) . 16.0)
+      (,(font-SFMono 16) . 16.0)
+      (,(font-SFMono 17) . 18.0)
+      (,(font-SFMono 18) . 18.0)
+      (,(font-SFMono 19) . 18.0)
+      (,(font-SFMono 20) . 20.0)
+      (,(font-SFMono 21) . 20.0)
+      (,(font-SFMono 22) . 20.0)
       (,(font-Hack 12)   . 12.0)
       (,(font-Hack 13)   . 12.0)
       (,(font-Hack 14)   . 14.0)
@@ -1310,23 +1315,19 @@ mode line."
   (defun set-emacs-frame (&optional size)
     (interactive "nFont Size: ")
     (setq size (or size default-font-size))
-    (if (or (< size 11) (> size 22))
-        (user-error "Font size must be in the range [11, 22]"))
+    (if (or (< size 12) (> size 22))
+        (user-error "Font size must be in the range [12, 22]"))
 
-    ;; `default' face
     (set-face-attribute 'default nil :font (font-Hack size))
 
     (when (equal system-type 'darwin)
       (dolist (charset '(han cjk-misc bopomofo))
         (set-fontset-font t charset (font-spec :family "STHeiTi")))
-
       (setq face-font-rescale-alist
             `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
                                            STHeiTi-size-map))
                                size))))
-
       (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
-
       ;; `variable-pitch' face uses the same height as the `default'.
       ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
       (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0))

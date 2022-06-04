@@ -227,7 +227,7 @@
  '(query-replace-highlight t)
  '(recentf-auto-cleanup 60)
  '(recentf-exclude
-   '("\\`out\\'" "\\.log\\'" "\\.el\\.gz\\'" "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'" "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)" "/\\.git/COMMIT_EDITMSG\\'"))
+   '("\\`out\\'" "\\.log\\'" "\\.el\\.gz\\'" "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'" "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)" "/\\.git/COMMIT_EDITMSG\\'") t)
  '(recentf-filename-handlers '(abbreviate-file-name))
  '(recentf-max-saved-items 2000)
  '(repeat-exit-key [return])
