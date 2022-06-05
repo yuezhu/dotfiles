@@ -792,28 +792,7 @@ mode line."
              ps-spool-buffer
              ps-spool-buffer-with-faces
              ps-spool-region
-             ps-spool-region-with-faces)
-
-  :config
-  (cond
-   ((equal system-type 'gnu/linux)
-    (setq ps-header-font-family 'Courier
-          ps-font-family 'Courier))
-   ((equal system-type 'darwin)
-    (add-to-list 'ps-font-info-database
-                 '(Menlo
-                   (fonts (normal      . "Menlo-Regular")
-                          (bold        . "Menlo-Bold")
-                          (italic      . "Menlo-Italic")
-                          (bold-italic . "Menlo-BoldItalic"))
-                   (size           . 11.0)
-                   (line-height    . 13.0)
-                   (space-width    . 6.04688)
-                   (avg-char-width . 6.04688)))
-
-    ;; (setq ps-header-font-family 'Menlo
-    ;;       ps-font-family 'Menlo)
-    )))
+             ps-spool-region-with-faces))
 
 (use-package org
   :ensure t

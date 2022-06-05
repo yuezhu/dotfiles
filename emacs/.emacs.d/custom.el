@@ -204,7 +204,7 @@
  '(ps-header-font-family 'Courier)
  '(ps-header-font-size 8.0)
  '(ps-header-line-pad 0.25)
- '(ps-header-lines 2)
+ '(ps-header-lines 1)
  '(ps-header-offset 14.173228346456693)
  '(ps-header-title-font-size 8.0)
  '(ps-inter-column 19.84251968503937)
@@ -224,7 +224,6 @@
  '(ps-spool-duplex t)
  '(ps-top-margin 19.84251968503937)
  '(ps-warn-paper-type t)
- '(python-environment--verbose t t)
  '(query-replace-highlight t)
  '(recentf-auto-cleanup 60)
  '(recentf-exclude
