@@ -938,7 +938,65 @@ mode line."
   :ensure t
   :bind ([remap fill-paragraph] . unfill-toggle))
 
+(use-package reformatter
+  :ensure t
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*.*-format errors\\*\\'"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t)
+                 (window-height lambda
+                                (w)
+                                (fit-window-to-buffer w
+                                                      (/
+                                                       (frame-height)
+                                                       2)
+                                                      10))))
+
+  (reformatter-define json-format
+    :program "jq"
+    :args '("--monochrome-output" "--indent" "2"))
+  (reformatter-define nxml-format
+    :program "tidy"
+    :args '("-indent" "-wrap" "0" "-omit" "-quiet" "-utf8" "-xml"))
+  (reformatter-define python-format
+    :program "black"
+    :args '("-"))
+  (reformatter-define jsonnet-format
+    :program "jsonnetfmt"
+    :args '("-"))
+  (reformatter-define terraform-format
+    :program "terraform"
+    :args '("fmt" "-no-color" "-"))
+
+  :hook
+  (json-mode
+   . (lambda () (bind-key "<f12>" #'json-format-buffer json-mode-map)))
+  (nxml-mode
+   . (lambda () (bind-key "<f12>" #'nxml-format-buffer nxml-mode-map)))
+  (python-mode
+   . (lambda () (bind-key "<f12>" #'python-format-buffer python-mode-map)))
+  (jsonnet-mode
+   . (lambda () (bind-key "<f12>" #'jsonnet-format-buffer jsonnet-mode-map)))
+  (terraform-mode
+   . (lambda () (bind-key "<f12>" #'terraform-format-buffer terraform-mode-map))))
+
 (use-package prog-mode
+  :preface
+  (defun indent-delete-trailing-whitespace (&optional beg end)
+    "Delete trailing whitespace and indent for selected region. If
+no region is activated, this will operate on the entire buffer."
+    (interactive
+     (progn
+       (barf-if-buffer-read-only)
+       (if (use-region-p)
+           (list (region-beginning) (region-end))
+         (list (point-min) (point-max)))))
+    (save-excursion
+      (unless (eq beg end)
+        (delete-trailing-whitespace beg end)
+        (indent-region beg end))))
+
   :hook
   (prog-mode
    . (lambda ()
@@ -946,6 +1004,8 @@ mode line."
         nil '(("\\<\\(FIXME\\|DEBUG\\|TODO\\):"
                1 font-lock-warning-face prepend)))))
 
+  :bind (:map prog-mode-map
+              ("<f12>" . indent-delete-trailing-whitespace))
   :defer t)
 
 (use-package display-fill-column-indicator
@@ -1242,11 +1302,6 @@ mode line."
   ;; (unless (display-graphic-p)
   ;;   (set-face-attribute 'default nil :background "unspecified-bg"))
   )
-
-(use-package format-buffer
-  :load-path "lisp"
-  :pin manual
-  :bind ("<f12>" . format-buffer))
 
 (when (display-graphic-p)
   (defsubst display-name (&optional frame)
