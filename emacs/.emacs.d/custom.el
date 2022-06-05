@@ -25,6 +25,7 @@
                   (company-dabbrev-code company-gtags company-etags company-keywords)
                   company-dabbrev))
  '(company-dabbrev-downcase nil)
+ '(company-quickhelp-mode t)
  '(company-selection-wrap-around t)
  '(compilation-always-kill t)
  '(compilation-context-lines 10)
@@ -37,14 +38,6 @@
  '(directory-free-space-args "-Pkh")
  '(dired-dwim-target t)
  '(dired-isearch-filenames 'dwim)
- '(dired-listing-switches
-   (cond
-    ((equal system-type 'gnu/linux)
-     "-Ahl --group-directories-first")
-    ((equal system-type 'darwin)
-     (if
-         (string-suffix-p "gls" insert-directory-program)
-         "-Alh --group-directories-first" "-Ahl"))))
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$")
  '(dired-omit-size-limit nil)
  '(dired-omit-verbose nil)
@@ -93,6 +86,7 @@
  '(git-link-use-commit t)
  '(global-auto-revert-mode t)
  '(global-auto-revert-non-file-buffers t)
+ '(global-company-mode t)
  '(global-display-line-numbers-mode nil)
  '(global-eldoc-mode t)
  '(global-font-lock-mode t)
@@ -234,11 +228,6 @@
  '(repeat-mode t)
  '(require-final-newline t)
  '(ring-bell-function 'ignore)
- '(safe-local-variable-values
-   '((eval when
-           (require 'rainbow-mode nil t)
-           (rainbow-mode 1))
-     (c-indent-level . 8)))
  '(save-abbrevs 'silently)
  '(scroll-bar-mode nil)
  '(scroll-error-top-bottom t)
@@ -250,27 +239,13 @@
  '(show-paren-style 'parentheses)
  '(size-indication-mode t)
  '(tab-width 4)
- '(terminal-here-terminal-command
-   '(lambda
-      (dir)
-      (pcase system-type
-        ('darwin
-         (list "open" "-a" "iTerm.app"
-               (expand-file-name dir)))
-        ('gnu/linux
-         (list "gnome-terminal")))))
+ '(terminal-here-mac-terminal-command 'iterm2)
  '(tls-checktrust t)
  '(tool-bar-mode nil)
  '(tramp-connection-timeout 15)
  '(tramp-default-method "ssh")
  '(tramp-use-ssh-controlmaster-options nil)
  '(transient-mark-mode t)
- '(trash-directory
-   (cond
-    ((equal system-type 'darwin)
-     "~/.Trash")
-    ((equal system-type 'gnu/linux)
-     "~/.local/share/Trash/files")))
  '(undo-limit 1000000)
  '(uniquify-after-kill-buffer-p t)
  '(uniquify-buffer-name-style 'post-forward-angle-brackets nil (uniquify))

@@ -38,11 +38,4 @@ into the kill ring."
                               "%a %b %d %H:%M:%S %Z %Y"))
            (current-time))))
 
-(when (and (equal system-type 'darwin)
-           (executable-find "trash"))
-  (defun system-move-file-to-trash (file)
-    "Use \"trash\" to move FILE to the MacOS Trash."
-    (call-process "trash" nil 0 nil
-                  file)))
-
 (provide 'init-util)

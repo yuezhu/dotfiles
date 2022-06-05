@@ -384,10 +384,16 @@ functions, eg., `try-expand-all-abbrevs'"
   :init
   (when (and (equal system-type 'darwin)
              (executable-find "gls"))
-    (setq insert-directory-program "gls")
-    ;; `dired-listing-switches' is set via Custom according to the value of
-    ;; `insert-directory-program'.
-    ))
+    (setq insert-directory-program "gls"))
+
+  (setq dired-listing-switches
+        (cond
+         ((equal system-type 'gnu/linux)
+          "-Ahl --group-directories-first")
+         ((equal system-type 'darwin)
+          (if (string-suffix-p "gls" insert-directory-program)
+              "-Alh --group-directories-first"
+            "-Ahl")))))
 
 (use-package diredfl
   :ensure t
@@ -409,22 +415,7 @@ functions, eg., `try-expand-all-abbrevs'"
 (use-package company
   :ensure t
   :diminish
-  :commands (company-mode
-             company-abort
-             company-indent-or-complete-common)
-
-  :init
-  (dolist (hook '(text-mode-hook
-                  prog-mode-hook
-                  conf-mode-hook
-                  ssh-config-mode-hook
-                  protobuf-mode-hook))
-    (add-hook hook
-              #'(lambda ()
-                  (company-mode)
-                  (local-set-key (kbd "<tab>")
-                                 #'company-indent-or-complete-common))))
-
+  :defer t
   :bind (:map company-active-map
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
@@ -442,9 +433,7 @@ followed by a space."
 
 (use-package company-quickhelp
   :ensure t
-  :after company
-  :config
-  (company-quickhelp-mode))
+  :after company)
 
 (use-package eglot
   :disabled
@@ -843,11 +832,6 @@ mode line."
   :ensure t
   :diminish
   :hook (emacs-lisp-mode . aggressive-indent-mode))
-
-(use-package rainbow-mode
-  :disabled
-  :ensure t
-  :defer t)
 
 (use-package rainbow-delimiters
   :ensure t
@@ -1285,7 +1269,18 @@ mode line."
   (bind-key* "s-`" #'set-emacs-frame))
 
 ;;
-;; Global keybindings
+;; Configure system trash
+;;
+(when (equal system-type 'darwin)
+  (if (executable-find "trash")
+      (defun system-move-file-to-trash (file)
+        "Use \"trash\" to move FILE to the MacOS Trash."
+        (call-process "trash" nil 0 nil
+                      file))
+    (setq trash-directory "~/.Trash")))
+
+;;
+;; Configure keybindings
 ;;
 (bind-key "C-x f"           #'save-buffer-file-name)
 (bind-key "C-x p"           #'other-window-backward)
