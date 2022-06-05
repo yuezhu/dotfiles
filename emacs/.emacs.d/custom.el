@@ -94,6 +94,7 @@
  '(global-auto-revert-mode t)
  '(global-auto-revert-non-file-buffers t)
  '(global-display-line-numbers-mode nil)
+ '(global-eldoc-mode t)
  '(global-font-lock-mode t)
  '(global-mark-ring-max 500)
  '(global-so-long-mode t)
@@ -189,7 +190,7 @@
  '(org-startup-folded "nofold")
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(compat zenburn-theme avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill which-key magit git-link highlight-escape-sequences rainbow-delimiters rainbow-mode aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile lsp-mode company-quickhelp company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
+   '(color-theme-sanityinc-tomorrow embark compat avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill magit git-link highlight-escape-sequences rainbow-delimiters aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile lsp-mode company-quickhelp company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
  '(projectile-enable-caching t)
  '(projectile-file-exists-local-cache-expire 300)
  '(projectile-files-cache-expire 259200)
@@ -227,7 +228,7 @@
  '(query-replace-highlight t)
  '(recentf-auto-cleanup 60)
  '(recentf-exclude
-   '("\\`out\\'" "\\.log\\'" "\\.el\\.gz\\'" "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'" "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)" "/\\.git/COMMIT_EDITMSG\\'") t)
+   '("\\`out\\'" "\\.log\\'" "\\.el\\.gz\\'" "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'" "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)" "/\\.git/COMMIT_EDITMSG\\'"))
  '(recentf-filename-handlers '(abbreviate-file-name))
  '(recentf-max-saved-items 2000)
  '(repeat-exit-key [return])

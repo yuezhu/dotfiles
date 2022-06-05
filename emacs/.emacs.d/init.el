@@ -100,6 +100,10 @@
   :diminish
   :defer t)
 
+(use-package eldoc
+  :diminish
+  :defer t)
+
 (use-package ialign
   :ensure t
   :bind ("C-c |" . ialign)
@@ -663,6 +667,7 @@ mode line."
 
 (use-package consult
   :ensure t
+  :after vertico
   :bind (("C-c TAB"                  . consult-imenu)
          ("C-x C-r"                  . consult-recent-file)
          ("C-M-s"                    . consult-line)
@@ -700,6 +705,22 @@ mode line."
                 (lambda (func &rest args)
                   (let ((completion-ignore-case t))
                     (apply func args))))))
+
+(use-package embark
+  :ensure t
+  :after vertico
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
 (use-package ace-window
   :ensure t
@@ -873,6 +894,7 @@ mode line."
   :hook (emacs-lisp-mode . aggressive-indent-mode))
 
 (use-package rainbow-mode
+  :disabled
   :ensure t
   :defer t)
 
@@ -907,14 +929,8 @@ mode line."
   :ensure t
   :defer t)
 
-;; Loaded by something else
-(use-package eldoc
-  :diminish
-  :defer 2
-  :config
-  (global-eldoc-mode))
-
 (use-package which-key
+  :disabled ;; 2022-06-04 can be replaced by `embark'
   :ensure t
   :diminish
   :defer 2
@@ -1224,6 +1240,7 @@ mode line."
   :defer t)
 
 (use-package zenburn-theme
+  :disabled
   :ensure t
   :init
   (unless (display-graphic-p)
@@ -1238,7 +1255,6 @@ mode line."
   )
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :if window-system
   :config
