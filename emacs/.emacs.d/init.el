@@ -446,34 +446,6 @@ followed by a space."
   :config
   (company-quickhelp-mode))
 
-(use-package company-elisp
-  :after (company lisp-mode)
-  :hook
-  (emacs-lisp-mode
-   . (lambda ()
-       (make-local-variable 'company-backends)
-       (add-to-list 'company-backends 'company-elisp))))
-
-(use-package company-shell
-  :disabled ;; 04/20/20 completion is very slow
-  :ensure t
-  :after (company sh-script)
-  :hook
-  (sh-mode
-   . (lambda ()
-       (make-local-variable 'company-backends)
-       (add-to-list 'company-backends 'company-shell))))
-
-(use-package company-lua
-  :disabled
-  :ensure t
-  :after (company lua-mode)
-  :hook
-  (lua-mode
-   . (lambda ()
-       (make-local-variable 'company-backends)
-       (add-to-list 'company-backends 'company-lua))))
-
 (use-package eglot
   :disabled
   :ensure t
