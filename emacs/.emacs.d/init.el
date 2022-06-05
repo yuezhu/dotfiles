@@ -14,9 +14,6 @@
              (makunbound 'file-name-handler-alist-tmp)
              (garbage-collect)) t)
 
-;; As of Emacs 28.1, this can be archived via `use-short-answers'.
-(defalias 'yes-or-no-p #'y-or-n-p)
-
 ;;
 ;; Use customizations
 ;;
@@ -635,8 +632,9 @@ mode line."
          ([remap yank-pop]           . consult-yank-replace)
          ([remap goto-line]          . consult-goto-line)
          ([remap projectile-ripgrep] . consult-ripgrep))
-  :bind (:map isearch-mode-map ("C-." . consult-line))
-  :commands consult--customize-set
+  :bind (:map isearch-mode-map
+              ("C-." . consult-line))
+
   :config
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
@@ -698,7 +696,7 @@ mode line."
          ("C-c j l" . avy-goto-line)
          ("C-c j j" . avy-resume))
   :bind (:map isearch-mode-map
-              ("C-'" . avy-isearch)))
+              ("C-," . avy-isearch)))
 
 (use-package compile
   :defer t
@@ -1173,7 +1171,7 @@ mode line."
   :ensure t
   :if window-system
   :config
-  (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'sanityinc-tomorrow-bright t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)

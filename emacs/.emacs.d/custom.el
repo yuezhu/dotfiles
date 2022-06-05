@@ -253,6 +253,7 @@
  '(use-file-dialog nil)
  '(use-package-enable-imenu-support t)
  '(use-package-verbose t)
+ '(use-short-answers t)
  '(vertico-count 20)
  '(which-func-unknown "n/a" t)
  '(which-function-mode t)
