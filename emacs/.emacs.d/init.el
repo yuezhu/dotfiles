@@ -954,31 +954,11 @@ mode line."
    ("/\\.properties\\'"      . conf-javaprop-mode)))
 
 (use-package lisp-mode
-  :preface
-  (defun do-eval-buffer ()
-    (interactive)
-    (call-interactively 'eval-buffer)
-    (message "Buffer has been evaluated"))
-
-  (defun do-eval-region ()
-    (interactive)
-    (call-interactively 'eval-region)
-    (message "Region has been evaluated"))
-
-  :bind
-  (:map emacs-lisp-mode-map
-        ("C-c C-c" . do-eval-buffer)
-        ("C-c C-r" . do-eval-region))
-
-  :mode ("/\\.emacs\\.d/\\(abbrev_defs\\|projects\\)" . emacs-lisp-mode)
-
   :defer t
-
   :hook
   (emacs-lisp-mode
    . (lambda ()
        (add-hook 'after-save-hook #'check-parens nil t))))
-
 
 (use-package make-mode
   :mode ("/Makefile\\..*" . makefile-gmake-mode)
