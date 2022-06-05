@@ -1,8 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
 ;;
-;; Indentation and format
+;; Buffer indentation and format utility
 ;;
+
+(defconst format-buffer-output-name "*Format Buffer Output*")
+
 (defun indent-region-delete-whitespace (&optional beg end)
   "Delete trailing whitespace and indent for selected region. If
 no region is activated, this will operate on the entire buffer."
@@ -22,7 +25,7 @@ no region is activated, this will operate on the entire buffer."
 OPTS. It returns numeric status code of the command execution
 result."
   (let ((old-buf (current-buffer))
-        (fmt-buf "*Format Buffer Output*")
+        (fmt-buf format-buffer-output-name)
         (coding-system-for-read 'utf-8)
         (coding-system-for-write 'utf-8)
         status)
@@ -77,6 +80,7 @@ configured, or nil if not."
     (list "terraform" "fmt" "-no-color" "-"))
    (t nil)))
 
+;;;###autoload
 (defun format-buffer (&optional beg end)
   "Format current buffer."
   (interactive
@@ -94,4 +98,16 @@ configured, or nil if not."
         (untabify beg end))
       (indent-region-delete-whitespace beg end))))
 
-(provide 'init-format)
+(add-to-list 'display-buffer-alist
+             `(,(format "\\`%s\\'" (regexp-quote format-buffer-output-name))
+               (display-buffer-at-bottom)
+               (inhibit-same-window . t)
+               (window-height lambda
+                              (w)
+                              (fit-window-to-buffer w
+                                                    (/
+                                                     (frame-height)
+                                                     2)
+                                                    10))))
+
+(provide 'format-buffer)

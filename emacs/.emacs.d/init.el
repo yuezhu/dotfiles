@@ -28,8 +28,6 @@
 ;; Initialize package
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (require 'init-elpa)
-(require 'init-format)
-(require 'init-util)
 
 ;;
 ;; Initialize use-package
@@ -306,7 +304,13 @@ cleaning up `recentf-list'."
 
 (use-package rg
   :ensure t
-  :bind ("C-c s" . rg-menu))
+  :bind ("C-c s" . rg-menu)
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*rg\\*\\'"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t)
+                 (window-height . 0.5))))
 
 (use-package dumb-jump
   :ensure t
@@ -406,13 +410,38 @@ functions, eg., `try-expand-all-abbrevs'"
 
 (use-package flycheck
   :ensure t
-  :hook (prog-mode . flycheck-mode)
-  :defer t)
+  :defer 2
+  :custom
+  (flycheck-disabled-checkers '(c/c++-cppcheck
+                                c/c++-gcc
+                                go-build
+                                go-errcheck
+                                go-gofmt
+                                go-golint
+                                go-staticcheck
+                                go-test
+                                go-unconvert
+                                go-vet
+                                json-jsonlint
+                                json-python-json
+                                python-mypy
+                                python-pycompile
+                                python-pyright
+                                ruby-rubocop
+                                sh-bash
+                                sh-posix-bash
+                                sh-posix-dash
+                                sh-zsh
+                                yaml-jsyaml
+                                yaml-ruby
+                                emacs-lisp-checkdoc))
+  :config
+  (global-flycheck-mode 1))
 
 (use-package company
   :ensure t
   :diminish
-  :defer t
+  :defer 2
   :bind (:map company-active-map
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
@@ -426,11 +455,24 @@ followed by a space."
   :bind (:map company-search-map
               ("C-p" . company-select-previous)
               ("C-n" . company-select-next)
-              ("C-f" . company-search-toggle-filtering)))
+              ("C-f" . company-search-toggle-filtering))
+
+  :custom
+  (company-backends
+   '(company-capf company-files
+                  (company-dabbrev-code company-gtags company-etags company-keywords)
+                  company-dabbrev))
+  (company-dabbrev-downcase nil)
+  (company-selection-wrap-around t)
+
+  :config
+  (global-company-mode 1))
 
 (use-package company-quickhelp
   :ensure t
-  :after company)
+  :after company
+  :custom
+  (company-quickhelp-mode 1))
 
 (use-package eglot
   :disabled
@@ -860,7 +902,19 @@ mode line."
 
 (use-package magit
   :ensure t
-  :defer t)
+  :defer t
+  :custom
+  (magit-commit-show-diff nil)
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`magit:"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t)
+                 (window-height . 0.5)))
+  (add-to-list 'display-buffer-alist
+               '("\\`magit-process:"
+                 (display-buffer-in-direction)
+                 (direction . right))))
 
 (use-package which-key
   :disabled ;; 2022-06-04 can be replaced by `embark'
@@ -1046,16 +1100,27 @@ mode line."
 (use-package go-mode
   :ensure t
   :bind
-  (:map go-mode-map
-        ("<f12>" . gofmt))
+  (:map go-mode-map ("<f12>" . gofmt))
   :hook
   (go-mode
    . (lambda ()
        (setq-local indent-tabs-mode t)
        (setq-local tab-width 4)
        (add-hook 'before-save-hook #'gofmt t t)))
+  :defer t
 
-  :defer t)
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*\\(Gofmt Errors\\|go-rename\\)\\*\\'"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t)
+                 (window-height lambda
+                                (w)
+                                (fit-window-to-buffer w
+                                                      (/
+                                                       (frame-height)
+                                                       2)
+                                                      10)))))
 
 (use-package go-rename
   :ensure t
@@ -1178,6 +1243,11 @@ mode line."
   ;;   (set-face-attribute 'default nil :background "unspecified-bg"))
   )
 
+(use-package format-buffer
+  :load-path "lisp"
+  :pin manual
+  :bind ("<f12>" . format-buffer))
+
 (when (display-graphic-p)
   (defsubst display-name (&optional frame)
     (pcase (sort (frame-monitor-attribute 'mm-size frame) '>)
@@ -1280,12 +1350,7 @@ mode line."
 ;;
 ;; Configure keybindings
 ;;
-(bind-key "C-x f"           #'save-buffer-file-name)
-(bind-key "C-x p"           #'other-window-backward)
-(bind-key "C-x 9"           #'adjust-window-dimension-transient)
-(bind-key "<f12>"           #'format-buffer)
 (bind-key "<C-M-backspace>" #'backward-kill-sexp)
-
 (when (display-graphic-p) (unbind-key "C-z"))
 
 ;; Display elapsed time

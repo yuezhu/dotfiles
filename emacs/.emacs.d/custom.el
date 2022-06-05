@@ -20,13 +20,6 @@
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
  '(comment-auto-fill-only-comments t)
- '(company-backends
-   '(company-capf company-files
-                  (company-dabbrev-code company-gtags company-etags company-keywords)
-                  company-dabbrev))
- '(company-dabbrev-downcase nil)
- '(company-quickhelp-mode t)
- '(company-selection-wrap-around t)
  '(compilation-always-kill t)
  '(compilation-context-lines 10)
  '(compilation-scroll-output t)
@@ -43,24 +36,6 @@
  '(dired-omit-verbose nil)
  '(dired-recursive-copies 'always)
  '(dired-recursive-deletes 'always)
- '(display-buffer-alist
-   '(("\\`\\*\\(Gofmt Errors\\|Format Buffer Output\\|go-rename\\)\\*\\'"
-      (display-buffer-at-bottom)
-      (inhibit-same-window . t)
-      (window-height lambda
-                     (w)
-                     (fit-window-to-buffer w
-                                           (/
-                                            (frame-height)
-                                            2)
-                                           10)))
-     ("\\`\\(\\*\\(Backtrace\\|rg\\)\\*\\'\\|magit:\\)"
-      (display-buffer-at-bottom)
-      (inhibit-same-window . t)
-      (window-height . 0.5))
-     ("\\`magit-process:"
-      (display-buffer-in-direction)
-      (direction . right))))
  '(display-time-12hr-format t)
  '(display-time-day-and-date nil)
  '(display-time-mode t)
@@ -79,14 +54,11 @@
  '(epg-pinentry-mode 'loopback)
  '(fill-column 78)
  '(find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
- '(flycheck-disabled-checkers
-   '(emacs-lisp-checkdoc ruby-rubocop sh-bash sh-posix-dash sh-posix-bash sh-zsh yaml-jsyaml yaml-ruby go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert go-staticcheck python-pycompile python-pyright python-mypy json-jsonlint json-python-json c/c++-gcc c/c++-cppcheck))
  '(flyspell-sort-corrections t)
  '(frame-resize-pixelwise t)
  '(git-link-use-commit t)
  '(global-auto-revert-mode t)
  '(global-auto-revert-non-file-buffers t)
- '(global-company-mode t)
  '(global-display-line-numbers-mode nil)
  '(global-eldoc-mode t)
  '(global-font-lock-mode t)
@@ -149,8 +121,6 @@
  '(lsp-signature-render-documentation nil)
  '(lua-indent-level 2)
  '(lua-indent-nested-block-content-align nil)
- '(magit-auto-revert-mode nil)
- '(magit-commit-show-diff nil)
  '(make-backup-files nil)
  '(mark-ring-max 100)
  '(markdown-command "multimarkdown")
