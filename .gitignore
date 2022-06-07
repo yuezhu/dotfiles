@@ -4,3 +4,8 @@
 !/emacs/.emacs.d/init.el
 !/emacs/.emacs.d/lisp
 !/emacs/.emacs.d/transient
+
+/mpv/.config/mpv/*
+!/mpv/.config/mpv/input.conf
+!/mpv/.config/mpv/mpv.conf
+!/mpv/.config/mpv/scripts
