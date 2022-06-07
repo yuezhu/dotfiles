@@ -203,7 +203,7 @@
  '(scroll-error-top-bottom t)
  '(search-highlight t)
  '(select-enable-clipboard t)
- '(sh-basic-offset 4)
+ '(sh-basic-offset 2)
  '(show-paren-delay 0)
  '(show-paren-mode t)
  '(show-paren-style 'parentheses)
