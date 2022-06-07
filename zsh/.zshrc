@@ -1,76 +1,86 @@
-## Do not add duplicates
+## Ensure uniqueness for path and fpath arrays
 typeset -U path
 typeset -U fpath
 
 ## PATH
-# Setting $path in the .zshenv does not produce the desired order
-# https://stackoverflow.com/questions/15726467/setting-zsh-path-not-producing-desired-order
+# On macOS, setting $path in the .zshenv does not produce the desired order
+# https://stackoverflow.com/a/63344431
 for d in \
-    /usr/local/sbin /usr/local/bin;
+  /usr/local/sbin /usr/local/bin;
 do
-    if [[ -d "${d}" ]]; then
-        path=("${d}" $path)
-    fi
+  if [[ -d "${d}" ]]; then
+    path=("${d}" $path)
+  fi
 done
 
 for d in \
-    /usr/local/opt/go/libexec /usr/local/go;
+  /usr/local/opt/go/libexec /usr/local/go;
 do
-    if [[ -d "${d}" ]]; then
-        export GOROOT="${d}"
-        path=("${GOROOT}/bin" $path)
-        break
-    fi
+  if [[ -d "${d}" ]]; then
+    export GOROOT="${d}"
+    path=("${GOROOT}/bin" $path)
+    break
+  fi
 done
 
 for d in \
-    /usr/local/opt/gawk/libexec/gnubin \
-        /usr/local/opt/gnu-sed/libexec/gnubin \
-        /usr/local/opt/gnu-indent/libexec/gnubin \
-        /usr/local/opt/make/libexec/gnubin \
-        /usr/local/opt/findutils/libexec/gnubin \
-        /usr/local/opt/mysql-client/bin \
-        /usr/local/opt/openssl/bin \
-        /usr/local/opt/llvm/bin \
-        /usr/local/opt/curl/bin \
-        /usr/local/opt/ruby/bin;
+  /usr/local/opt/gawk/libexec/gnubin \
+    /usr/local/opt/gnu-sed/libexec/gnubin \
+    /usr/local/opt/gnu-indent/libexec/gnubin \
+    /usr/local/opt/make/libexec/gnubin \
+    /usr/local/opt/findutils/libexec/gnubin \
+    /usr/local/opt/mysql-client/bin \
+    /usr/local/opt/openssl/bin \
+    /usr/local/opt/llvm/bin \
+    /usr/local/opt/curl/bin \
+    /usr/local/opt/ruby/bin;
 do
-    if [[ -d "${d}" ]]; then
-        path=("${d}" $path)
-    fi
+  if [[ -d "${d}" ]]; then
+    path=("${d}" $path)
+  fi
 done
 
 for d in \
-    "${HOME}/bin" "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
+  "${HOME}/bin" "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
-    if [[ -d "${d}" ]]; then
-        path=("${d}" $path)
-    fi
+  if [[ -d "${d}" ]]; then
+    path=("${d}" $path)
+  fi
 done
 
-## Enable zsh-autosuggestions
+## zsh-autosuggestions
 for d in \
-    "${HOME}/.nix-profile/share/zsh-autosuggestions" \
-        /usr/local/share/zsh-autosuggestions \
-        /usr/share/zsh-autosuggestions;
+  "${HOME}/.nix-profile/share/zsh-autosuggestions" \
+    /usr/local/share/zsh-autosuggestions \
+    /usr/share/zsh-autosuggestions;
 do
-    if [[ -e "${d}" ]]; then
-        source "${d}/zsh-autosuggestions.zsh"
-        break
-    fi
+  if [[ -d "${d}" ]]; then
+    source "${d}/zsh-autosuggestions.zsh"
+    break
+  fi
 done
 
-## Enable zsh-syntax-highlighting
+## zsh-syntax-highlighting
 for d in \
-    "${HOME}/.nix-profile/share/zsh-syntax-highlighting" \
-        /usr/local/share/zsh-syntax-highlighting \
-        /usr/share/zsh-syntax-highlighting;
+  "${HOME}/.nix-profile/share/zsh-syntax-highlighting" \
+    /usr/local/share/zsh-syntax-highlighting \
+    /usr/share/zsh-syntax-highlighting;
 do
-    if [[ -e "${d}" ]]; then
-        export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="${d}/highlighters"
-        source "${d}/zsh-syntax-highlighting.zsh"
-        break
-    fi
+  if [[ -d "${d}" ]]; then
+    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="${d}/highlighters"
+    source "${d}/zsh-syntax-highlighting.zsh"
+    break
+  fi
+done
+
+## Additional completions
+for d in \
+  "${HOME}/.nix-profile/share/zsh/site-functions" \
+    /usr/local/share/zsh-completions;
+do
+  if [[ -d "${d}" ]]; then
+    fpath=("${d}" $fpath)
+  fi
 done
 
 # Enable colored menu and scrolling completion in completion listings
@@ -81,30 +91,35 @@ zmodload -i zsh/complist
 ## Completion
 autoload -Uz compinit
 
-# Re-generate the .zcompdump if its mtime is older than 24 hours.
+# Speed up zsh compinit by only checking cache once a day
 #
-# The option -u makes compinit skip security check and all files found be used.
+# The option -u makes compinit skip security check and all files found be
+# used.
 #
-# The option -C skips the check performed to see if there are new functions can be omitted. In
-# this case the dump file will only be created if there isn't one already.
+# The option -C skips the check performed to see if there are new functions
+# can be omitted. In this case the dump file will only be created if there
+# isn't one already.
 #
-# Use an anonymous function that takes a file name as an argument using glob qualifiers (N.mh+24)
-# when EXTENDED_GLOB is not enabled. In contrast, if EXTENDED_GLOB is enabled, globbing will be
-# performed for [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]:
+# Use an anonymous function that takes a file name as an argument using glob
+# qualifiers (N.mh+24) when EXTENDED_GLOB is not enabled. In contrast, if
+# EXTENDED_GLOB is enabled, globbing will be performed for [[ -n
+# ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]:
 #
-# - '#q' is an explicit glob qualifier that makes globbing work within zsh's [[ ]] construct.
-# - 'N' makes the glob pattern evaluate to nothing when it doesn't match (rather than throw a globbing error)
+# - '#q' is an explicit glob qualifier that makes globbing work within zsh's
+#   [[ ]] construct.
+# - 'N' makes the glob pattern evaluate to nothing when it doesn't match
+#   (rather than throw a globbing error)
 # - '.' matches "regular files"
-# - 'mh+24' matches files (or directories or whatever) that are older than 24 hours.
+# - 'mh+24' matches files (or directories or whatever) that are older than 24
+#   hours.
 # https://gist.github.com/ctechols/ca1035271ad134841284#gistcomment-3109177
 ZSH_COMPDUMP=${ZDOTDIR:-$HOME}/.zcompdump
 () {
-    if [[ $# -gt 0 ]]; then
-        rm -f "${ZSH_COMPDUMP}"
-        compinit -u
-    else
-        compinit -C
-    fi
+  if [[ $# -gt 0 ]]; then
+    compinit -u
+  else
+    compinit -C
+  fi
 } ${ZSH_COMPDUMP}(N.mh+24)
 
 # http://zsh.sourceforge.net/Doc/Release/Options.html
@@ -139,12 +154,12 @@ setopt LIST_PACKED
 
 # Export LS_COLORS
 for f in \
-    /usr/local/bin/gdircolors /usr/bin/dircolors;
+  /usr/local/bin/gdircolors /usr/bin/dircolors;
 do
-    if [[ -x "${f}" ]]; then
-        eval "$("${f}" -b)"
-        break
-    fi
+  if [[ -x "${f}" ]]; then
+    eval "$("${f}" -b)"
+    break
+  fi
 done
 
 # Display lists of matches for files in different colours depending on the file
@@ -293,7 +308,7 @@ setopt INTERACTIVE_COMMENTS
 # For expansion definition:
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 function xterm_title_precmd () {
-    print -Pn -- '\e]2;%m: %~\a'
+  print -Pn -- '\e]2;%m: %~\a'
 }
 
 add-zsh-hook -Uz precmd xterm_title_precmd
@@ -310,19 +325,19 @@ export GPG_TTY=$(tty)
 ## Aliases
 # OS-specific aliases
 case $OSTYPE in
-    *linux*)
+  *linux*)
+    alias ls='ls --color=auto --group-directories-first' ;;
+  *darwin*)
+    case $(which ls 2> /dev/null) in
+      *gnubin*)
         alias ls='ls --color=auto --group-directories-first' ;;
-    *darwin*)
-        case $(which ls 2> /dev/null) in
-            *gnubin*)
-                alias ls='ls --color=auto --group-directories-first' ;;
-            *)
-                alias ls='ls -GT'
-                export CLICOLOR=1
-                export LSCOLORS='ExGxbxdxCxegedabagacad' ;;
-        esac
-        alias htop='sudo /usr/local/bin/htop'
-        ;;
+      *)
+        alias ls='ls -GT'
+        export CLICOLOR=1
+        export LSCOLORS='ExGxbxdxCxegedabagacad' ;;
+    esac
+    alias htop='sudo /usr/local/bin/htop'
+    ;;
 esac
 
 # Set ls aliases
