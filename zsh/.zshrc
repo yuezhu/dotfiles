@@ -2,36 +2,46 @@
 typeset -U path
 typeset -U fpath
 
-## GOROOT
+## PATH
+# Setting $path in the .zshenv does not produce the desired order
+# https://stackoverflow.com/questions/15726467/setting-zsh-path-not-producing-desired-order
+for d in \
+    /usr/local/sbin /usr/local/bin;
+do
+    if [[ -d "${d}" ]]; then
+        path=("${d}" $path)
+    fi
+done
+
 for d in \
     /usr/local/opt/go/libexec /usr/local/go;
 do
     if [[ -d "${d}" ]]; then
         export GOROOT="${d}"
+        path=("${GOROOT}/bin" $path)
         break
     fi
 done
 
-## PATH
-# Setting $path in the .zshenv does not produce the desired order
-# https://stackoverflow.com/questions/15726467/setting-zsh-path-not-producing-desired-order
 for d in \
     /usr/local/opt/gawk/libexec/gnubin \
         /usr/local/opt/gnu-sed/libexec/gnubin \
         /usr/local/opt/gnu-indent/libexec/gnubin \
         /usr/local/opt/make/libexec/gnubin \
         /usr/local/opt/findutils/libexec/gnubin \
-        /usr/local/bin \
-        /usr/local/sbin \
         /usr/local/opt/mysql-client/bin \
         /usr/local/opt/openssl/bin \
         /usr/local/opt/llvm/bin \
         /usr/local/opt/curl/bin \
-        /usr/local/opt/terraform@0.12/bin \
-        /usr/local/opt/ruby/bin \
-        "${GOROOT}/bin" \
-        "${HOME}/bin" \
-        "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
+        /usr/local/opt/ruby/bin;
+do
+    if [[ -d "${d}" ]]; then
+        path=("${d}" $path)
+    fi
+done
+
+for d in \
+    "${HOME}/bin" "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
     if [[ -d "${d}" ]]; then
         path=("${d}" $path)
@@ -40,7 +50,7 @@ done
 
 ## Enable zsh-autosuggestions
 for d in \
-    "${HOME}/.zsh/zsh-autosuggestions" \
+    "${HOME}/.nix-profile/share/zsh-autosuggestions" \
         /usr/local/share/zsh-autosuggestions \
         /usr/share/zsh-autosuggestions;
 do
@@ -52,7 +62,7 @@ done
 
 ## Enable zsh-syntax-highlighting
 for d in \
-    "${HOME}/.zsh/zsh-syntax-highlighting" \
+    "${HOME}/.nix-profile/share/zsh-syntax-highlighting" \
         /usr/local/share/zsh-syntax-highlighting \
         /usr/share/zsh-syntax-highlighting;
 do
@@ -330,14 +340,5 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# Enable 256color for emacs and vim
-# alias emacs='TERM=xterm-256color emacs'
-# alias vim='TERM=xterm-256color vim'
-
-# alias ssh='TERM=xterm ssh'
-
 # Show timestamp in history
 alias history='history -i'
-
-# Enable 256color and specify bash executable for tmux
-# alias tmux='tmux -2'
