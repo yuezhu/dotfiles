@@ -1294,7 +1294,6 @@ no region is activated, this will operate on the entire buffer."
 
 (use-package color-theme-sanityinc-tomorrow
   :ensure t
-  :if window-system
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
