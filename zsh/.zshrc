@@ -280,7 +280,7 @@ zstyle ':vcs_info:git:*' actionformats ' %B%F{cyan}%s:%b|%a%%b%f'
 
 # https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/bira.zsh-theme
 PROMPT='%B%F{green}%m%f %F{blue}%~%f%F{cyan}${vcs_info_msg_0_}%f %(!.#.$)%b '
-RPROMPT=' %B%D{%H:%M:%S.%.}%b'
+#RPROMPT=' %B%D{%H:%M:%S.%.}%b'
 
 ## MISC
 # Report command running time if its user/system takes longer than 3 seconds
