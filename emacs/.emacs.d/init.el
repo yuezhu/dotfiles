@@ -73,6 +73,13 @@
   ((text-mode magit-process-mode) . goto-address-mode)
   :defer t)
 
+(use-package display-fill-column-indicator
+  :hook
+  (auto-fill-mode
+   . (lambda ()
+       (display-fill-column-indicator-mode (if auto-fill-function 1 -1))))
+  :defer t)
+
 (use-package simple
   :hook ((org-mode
           markdown-mode
@@ -83,8 +90,7 @@
            dired-mode
            speedbar-mode
            compilation-mode)
-          . (lambda ()
-              (visual-line-mode -1))))
+          . (lambda () (visual-line-mode -1))))
   :defer t)
 
 (use-package xref
@@ -829,8 +835,8 @@ mode line."
   :hook
   (org-mode
    . (lambda ()
-       ;; make auto-fill work for normal paragraphs in `org-mode'
-       (setq-local comment-auto-fill-only-comments nil)))
+       (org-indent-mode 1)
+       (setq-local fill-column 120)))
   :defer t)
 
 (use-package org-make-toc
@@ -1006,10 +1012,6 @@ no region is activated, this will operate on the entire buffer."
 
   :bind (:map prog-mode-map
               ("<f12>" . indent-delete-trailing-whitespace))
-  :defer t)
-
-(use-package display-fill-column-indicator
-  :hook (prog-mode . display-fill-column-indicator-mode)
   :defer t)
 
 (use-package conf-mode
