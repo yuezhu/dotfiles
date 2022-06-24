@@ -19,7 +19,6 @@
  '(comint-prompt-read-only t)
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
- '(comment-auto-fill-only-comments t)
  '(compilation-always-kill t)
  '(compilation-context-lines 10)
  '(compilation-scroll-output t)

@@ -1006,6 +1006,7 @@ no region is activated, this will operate on the entire buffer."
   :hook
   (prog-mode
    . (lambda ()
+       (setq-local comment-auto-fill-only-comments t)
        (font-lock-add-keywords
         nil '(("\\<\\(FIXME\\|DEBUG\\|TODO\\):"
                1 font-lock-warning-face prepend)))))
