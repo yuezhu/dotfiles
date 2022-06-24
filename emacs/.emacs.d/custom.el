@@ -134,6 +134,8 @@
  '(mouse-yank-at-point t)
  '(native-comp-async-report-warnings-errors 'silent)
  '(next-line-add-newlines nil)
+ '(ns-alternate-modifier 'super)
+ '(ns-command-modifier 'meta)
  '(ns-pop-up-frames nil)
  '(nxml-child-indent 2)
  '(nxml-outline-child-indent 2)
