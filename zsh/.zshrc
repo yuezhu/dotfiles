@@ -323,7 +323,6 @@ export LESS_TERMCAP_se=$'\e[0m'
 export GPG_TTY=$(tty)
 
 ## Aliases
-# OS-specific aliases
 case $OSTYPE in
   *linux*)
     alias ls='ls --color=auto --group-directories-first' ;;
@@ -336,24 +335,24 @@ case $OSTYPE in
         export CLICOLOR=1
         export LSCOLORS='ExGxbxdxCxegedabagacad' ;;
     esac
-    alias htop='sudo /usr/local/bin/htop'
-    ;;
+    alias htop='sudo /usr/local/bin/htop' ;;
 esac
 
-# Set ls aliases
 alias l='ls -CF'
 alias ll='ls -lahF'
 alias lt='ll -rt'
 
-# Set grep with color
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-# Set interactive rm, cp and mv
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# Show timestamp in history
 alias history='history -i'
+
+## Additional customization
+if [[ -f ~/.zsh_custom ]]; then
+  . ~/.zsh_custom
+fi
