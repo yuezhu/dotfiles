@@ -1280,6 +1280,10 @@ no region is activated, this will operate on the entire buffer."
   :ensure t
   :defer t)
 
+(use-package jenkinsfile-mode
+  :ensure t
+  :defer t)
+
 (use-package zenburn-theme
   :disabled
   :ensure t
