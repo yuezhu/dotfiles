@@ -1369,7 +1369,7 @@ no region is activated, this will operate on the entire buffer."
       (,(font-Hack 22)   . 20.0))
     "Font mapping to corresponding STHeiTi size.")
 
-  (defconst default-font-size 14
+  (defconst default-font-size 13
     "Default font size")
 
   (defun set-emacs-frame (&optional size)
