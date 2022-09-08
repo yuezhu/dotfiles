@@ -350,7 +350,7 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-alias history='history -i'
+alias history='history -i 0'
 
 ## Additional customization
 if [[ -f ~/.zsh_custom ]]; then
