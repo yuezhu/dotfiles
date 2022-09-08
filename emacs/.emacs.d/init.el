@@ -1045,6 +1045,7 @@ no region is activated, this will operate on the entire buffer."
   :defer t)
 
 (use-package sh-script
+  :mode ("\\.zsh_custom\\'" . sh-mode)
   :defer t)
 
 (use-package cc-mode
