@@ -13,6 +13,7 @@ do
   fi
 done
 
+# Golang
 for d in \
   /usr/local/opt/go/libexec /usr/local/go;
 do
@@ -23,6 +24,18 @@ do
   fi
 done
 
+# Java
+if [[ -d /usr/local/opt/openjdk/bin ]]; then
+  path=(/usr/local/opt/openjdk/bin $path)
+  export CPPFLAGS="-I/usr/local/opt/openjdk/include"
+fi
+
+# Ruby
+if [[ -d /usr/local/opt/ruby/bin ]]; then
+  path=(/usr/local/opt/ruby/bin $path)
+fi
+
+# Tooling binaries
 for d in \
   /usr/local/opt/gawk/libexec/gnubin \
     /usr/local/opt/gnu-sed/libexec/gnubin \
@@ -31,15 +44,14 @@ for d in \
     /usr/local/opt/findutils/libexec/gnubin \
     /usr/local/opt/mysql-client/bin \
     /usr/local/opt/openssl/bin \
-    /usr/local/opt/llvm/bin \
-    /usr/local/opt/curl/bin \
-    /usr/local/opt/ruby/bin;
+    /usr/local/opt/curl/bin;
 do
   if [[ -d "${d}" ]]; then
     path=("${d}" $path)
   fi
 done
 
+# Prioritize my own binaries
 for d in \
   "${HOME}/bin" "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
