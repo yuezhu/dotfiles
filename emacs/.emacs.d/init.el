@@ -1057,10 +1057,8 @@ no region is activated, this will operate on the entire buffer."
          ("\\.m\\'"                   . c-mode)
          ("\\.mm\\'"                  . c++-mode))
   :hook
-  (c-mode-common
-   . (lambda ()
-       (cwarn-mode 1)
-       (c-set-style "clang")))
+  (c-mode-common . (lambda () (cwarn-mode 1)))
+  (c++-mode . (lambda () (c-set-style "clang")))
 
   :defer t
 
@@ -1286,6 +1284,7 @@ no region is activated, this will operate on the entire buffer."
   :defer t)
 
 (use-package zenburn-theme
+  :disabled
   :ensure t
   :init
   (unless (display-graphic-p)
@@ -1300,7 +1299,6 @@ no region is activated, this will operate on the entire buffer."
   )
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
