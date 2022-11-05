@@ -162,14 +162,14 @@
   (ediff-before-setup . winner-mode)
   (ediff-quit . winner-undo)
 
-  :defer 2
+  :defer 1
 
   :config
   (winner-mode))
 
 
 (use-package midnight
-  :defer 2
+  :defer 1
   :config
   (midnight-mode))
 
@@ -211,7 +211,7 @@
              recentf-string-member)
 
   ;; Loaded by `consult'
-  :defer 2
+  :defer 1
 
   :config
   (recentf-mode)
@@ -450,7 +450,7 @@ functions, eg., `try-expand-all-abbrevs'"
 
 (use-package flycheck
   :ensure t
-  :defer 2
+  :defer 1
   :custom
   (flycheck-disabled-checkers '(c/c++-cppcheck
                                 c/c++-gcc
@@ -482,7 +482,7 @@ functions, eg., `try-expand-all-abbrevs'"
 (use-package company
   :ensure t
   :diminish
-  :defer 2
+  :defer 1
   :bind (:map company-active-map
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
@@ -614,7 +614,7 @@ mode line."
              projectile-project-root
              projectile-update-mode-line)
 
-  :defer 2
+  :defer 1
 
   ;; If not calling `projectile-set-env' in the `find-file-hook', the
   ;; `lsp-go-directory-filters' set in that function won't be picked up by
@@ -697,6 +697,15 @@ mode line."
          ("C-c c i" . crux-find-user-init-file)
          ("C-c c r" . crux-rename-file-and-buffer)
          ("C-c c d" . crux-delete-file-and-buffer)))
+
+
+;; Do not allow the cursor to move onto the minibuffer prompt
+(use-package cursor-sensor
+  :init
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  :hook
+  (minibuffer-setup . cursor-intangible-mode))
 
 
 (use-package vertico
@@ -1007,7 +1016,7 @@ mode line."
   :disabled ;; 2022-06-04 can be replaced by `embark'
   :ensure t
   :diminish
-  :defer 2
+  :defer 1
   :config
   (which-key-mode))
 
