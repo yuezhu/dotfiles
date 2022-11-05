@@ -3,7 +3,7 @@
 (require 'package)
 
 ;;
-;; Emacs package management
+;; ELPA initialization and auto-upgrade
 ;;
 (defconst package-must-elpa-packages '(org)
   "Packages in this list must be from ELPA if present when checking

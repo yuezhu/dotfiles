@@ -134,6 +134,8 @@
  '(mouse-yank-at-point t)
  '(native-comp-async-report-warnings-errors 'silent)
  '(next-line-add-newlines nil)
+ '(ns-alternate-modifier 'super)
+ '(ns-command-modifier 'meta)
  '(ns-pop-up-frames nil)
  '(nxml-child-indent 2)
  '(nxml-outline-child-indent 2)
@@ -153,7 +155,7 @@
  '(org-startup-folded "nofold")
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(color-theme-sanityinc-tomorrow ht bind-key pos-tip jenkinsfile-mode marginalia reformatter embark compat avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill magit git-link highlight-escape-sequences rainbow-delimiters aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile lsp-mode company-quickhelp company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
+   '(zenburn-theme embark-consult ht bind-key pos-tip jenkinsfile-mode marginalia reformatter embark compat avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill magit git-link highlight-escape-sequences rainbow-delimiters aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile company-quickhelp company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
  '(projectile-enable-caching t)
  '(projectile-file-exists-local-cache-expire 300)
  '(projectile-files-cache-expire 259200)
