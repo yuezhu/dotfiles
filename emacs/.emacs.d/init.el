@@ -162,14 +162,14 @@
   (ediff-before-setup . winner-mode)
   (ediff-quit . winner-undo)
 
-  :defer 1
+  :defer 2
 
   :config
   (winner-mode))
 
 
 (use-package midnight
-  :defer 1
+  :defer 2
   :config
   (midnight-mode))
 
@@ -211,7 +211,7 @@
              recentf-string-member)
 
   ;; Loaded by `consult'
-  :defer 1
+  :defer 2
 
   :config
   (recentf-mode)
@@ -450,7 +450,7 @@ functions, eg., `try-expand-all-abbrevs'"
 
 (use-package flycheck
   :ensure t
-  :defer 1
+  :defer 2
   :custom
   (flycheck-disabled-checkers '(c/c++-cppcheck
                                 c/c++-gcc
@@ -482,7 +482,7 @@ functions, eg., `try-expand-all-abbrevs'"
 (use-package company
   :ensure t
   :diminish
-  :defer 1
+  :demand t
   :bind (:map company-active-map
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
@@ -513,7 +513,8 @@ followed by a space."
 (use-package company-quickhelp
   :ensure t
   :after company
-  :custom
+  :defer 2
+  :config
   (company-quickhelp-mode 1))
 
 
@@ -614,7 +615,7 @@ mode line."
              projectile-project-root
              projectile-update-mode-line)
 
-  :defer 1
+  :defer 2
 
   ;; If not calling `projectile-set-env' in the `find-file-hook', the
   ;; `lsp-go-directory-filters' set in that function won't be picked up by
@@ -1016,7 +1017,7 @@ mode line."
   :disabled ;; 2022-06-04 can be replaced by `embark'
   :ensure t
   :diminish
-  :defer 1
+  :defer 2
   :config
   (which-key-mode))
 
