@@ -90,6 +90,7 @@
 
 
 (use-package simple
+  :diminish auto-fill-function
   :hook ((org-mode
           markdown-mode
           prog-mode
@@ -451,38 +452,15 @@ functions, eg., `try-expand-all-abbrevs'"
 (use-package flycheck
   :ensure t
   :defer 2
-  :custom
-  (flycheck-disabled-checkers '(c/c++-cppcheck
-                                c/c++-gcc
-                                go-build
-                                go-errcheck
-                                go-gofmt
-                                go-golint
-                                go-staticcheck
-                                go-test
-                                go-unconvert
-                                go-vet
-                                json-jsonlint
-                                json-python-json
-                                python-mypy
-                                python-pycompile
-                                python-pyright
-                                ruby-rubocop
-                                sh-bash
-                                sh-posix-bash
-                                sh-posix-dash
-                                sh-zsh
-                                yaml-jsyaml
-                                yaml-ruby
-                                emacs-lisp-checkdoc))
   :config
   (global-flycheck-mode 1))
 
 
 (use-package company
   :ensure t
-  :diminish
-  :demand t
+  ;; 2022-11-06 enable lighter because it shows the backend used for
+  ;; the current completion.
+  ;; :bind ("<tab>" . company-indent-or-complete-common)
   :bind (:map company-active-map
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
@@ -498,16 +476,8 @@ followed by a space."
               ("C-n" . company-select-next)
               ("C-f" . company-search-toggle-filtering))
 
-  :custom
-  (company-backends
-   '(company-capf company-files
-                  (company-dabbrev-code company-gtags company-etags company-keywords)
-                  company-dabbrev))
-  (company-dabbrev-downcase nil)
-  (company-selection-wrap-around t)
-
-  :config
-  (global-company-mode 1))
+  :hook
+  (after-init . global-company-mode))
 
 
 (use-package company-quickhelp
@@ -742,14 +712,24 @@ mode line."
          ([remap projectile-ripgrep] . consult-ripgrep))
   :bind (:map isearch-mode-map
               ("C-." . consult-line))
-
-  :config
+  :init
+  ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
+
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args)))
 
   (with-eval-after-load 'projectile
     (setq consult-project-root-function #'projectile-project-root))
 
+  :config
   (consult-customize consult-ripgrep
                      consult-git-grep
                      consult-grep
@@ -999,8 +979,6 @@ mode line."
 (use-package magit
   :ensure t
   :defer t
-  :custom
-  (magit-commit-show-diff nil)
   :config
   (add-to-list 'display-buffer-alist
                '("\\`magit:"
@@ -1053,6 +1031,8 @@ mode line."
                                                        2)
                                                       10))))
 
+  ;; Using `reformatter-define' will cause `:config' to run even though it
+  ;; should be deferred due to the presence of `:hook'.
   (reformatter-define json-format
     :program "jq"
     :args '("--monochrome-output" "--indent" "2"))
@@ -1071,15 +1051,20 @@ mode line."
 
   :hook
   (json-mode
-   . (lambda () (bind-key "<f12>" #'json-format-buffer json-mode-map)))
+   . (lambda ()
+       (bind-key "<f12>" #'json-format-buffer json-mode-map)))
   (nxml-mode
-   . (lambda () (bind-key "<f12>" #'nxml-format-buffer nxml-mode-map)))
+   . (lambda ()
+       (bind-key "<f12>" #'nxml-format-buffer nxml-mode-map)))
   (python-mode
-   . (lambda () (bind-key "<f12>" #'python-format-buffer python-mode-map)))
+   . (lambda ()
+       (bind-key "<f12>" #'python-format-buffer python-mode-map)))
   (jsonnet-mode
-   . (lambda () (bind-key "<f12>" #'jsonnet-format-buffer jsonnet-mode-map)))
+   . (lambda ()
+       (bind-key "<f12>" #'jsonnet-format-buffer jsonnet-mode-map)))
   (terraform-mode
-   . (lambda () (bind-key "<f12>" #'terraform-format-buffer terraform-mode-map))))
+   . (lambda ()
+       (bind-key "<f12>" #'terraform-format-buffer terraform-mode-map))))
 
 
 (use-package prog-mode
@@ -1430,7 +1415,7 @@ no region is activated, this will operate on the entire buffer."
   :disabled
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-bright t)
+  (load-theme 'sanityinc-tomorrow-night t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
