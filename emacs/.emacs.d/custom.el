@@ -21,8 +21,9 @@
  '(comint-scroll-to-bottom-on-input t)
  '(company-backends
    '((company-capf :with company-dabbrev-code :separate)
-     company-files company-keywords company-abbrev company-dabbrev))
+     company-files company-keywords company-dabbrev))
  '(company-dabbrev-downcase nil)
+ '(company-minimum-prefix-length 2)
  '(company-selection-wrap-around t)
  '(company-transformers '(delete-dups))
  '(compilation-always-kill t)
@@ -164,7 +165,7 @@
  '(org-startup-folded "nofold")
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(zenburn-theme embark-consult ht bind-key pos-tip jenkinsfile-mode marginalia reformatter embark compat avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill magit git-link highlight-escape-sequences rainbow-delimiters aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile company-quickhelp company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
+   '(zenburn-theme embark-consult ht bind-key pos-tip jenkinsfile-mode marginalia reformatter embark compat avy org with-editor highlight-indent-guides magit-section markdown-mode transient spinner git-commit f popup s orderless dash cmake-mode ssh-config-mode syslog-mode gitattributes-mode gitignore-mode gitconfig-mode dockerfile-mode jinja2-mode jsonnet-mode ovpn-mode json-mode protobuf-mode terraform-mode yaml-mode systemd vimrc-mode vcl-mode go-rename go-mode lua-mode rspec-mode enh-ruby-mode applescript-mode rpm-spec-mode unfill magit git-link highlight-escape-sequences rainbow-delimiters aggressive-indent paredit markdown-toc edit-indirect htmlize ox-gfm terminal-here ace-link ace-window consult vertico crux yasnippet-snippets yasnippet projectile company flycheck diredfl dumb-jump rg diff-hl ibuffer-vc flyspell-correct ialign diminish use-package))
  '(projectile-enable-caching t)
  '(projectile-file-exists-local-cache-expire 300)
  '(projectile-files-cache-expire 259200)

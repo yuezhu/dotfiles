@@ -481,6 +481,7 @@ followed by a space."
 
 
 (use-package company-quickhelp
+  :disabled ;; 2022-11-07 `company' has quick help messages in the echo area.
   :ensure t
   :after company
   :defer 2
