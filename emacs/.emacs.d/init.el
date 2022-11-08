@@ -682,7 +682,26 @@ mode line."
 
 (use-package vertico
   :ensure t
-  :hook (after-init . vertico-mode))
+  :hook (after-init . vertico-mode)
+  :custom
+  (vertico-count 20)
+  (vertico-multiform-categories
+   '((buffer flat (vertico-cycle . t))))
+  (vertico-multiform-commands
+   '((consult-imenu (completion-ignore-case . t))
+     (consult-recent-file (completion-ignore-case . t))))
+  :config
+  (vertico-multiform-mode)
+
+  ;; https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow
+  (advice-add #'vertico--format-candidate :around
+              (lambda (orig cand prefix suffix index _start)
+                (setq cand (funcall orig cand prefix suffix index _start))
+                (concat
+                 (if (= vertico--index index)
+                     (propertize "» " 'face 'vertico-current)
+                   "  ")
+                 cand))))
 
 
 (use-package orderless
@@ -710,7 +729,8 @@ mode line."
          ("C-M-s"                    . consult-line)
          ([remap yank-pop]           . consult-yank-replace)
          ([remap goto-line]          . consult-goto-line)
-         ([remap projectile-ripgrep] . consult-ripgrep))
+         ([remap projectile-ripgrep] . consult-ripgrep)
+         )
   :bind (:map isearch-mode-map
               ("C-." . consult-line))
   :init
@@ -740,22 +760,11 @@ mode line."
                      consult--source-recent-file
                      consult--source-project-recent-file
                      consult--source-bookmark
-                     :preview-key (kbd "M-."))
-
-  (dolist (func '(consult-ripgrep consult-xref))
-    (advice-add func :around
-                (lambda (func &rest args)
-                  (let ((vertico-count (/ (frame-height) 2)))
-                    (apply func args)))))
-
-  (dolist (func '(consult-recent-file consult-imenu))
-    (advice-add func :around
-                (lambda (func &rest args)
-                  (let ((completion-ignore-case t))
-                    (apply func args))))))
+                     :preview-key (kbd "M-.")))
 
 
 (use-package embark
+  :disabled ;; 2022-11-07 not used
   :ensure t
   :after vertico
   :bind
@@ -773,6 +782,7 @@ mode line."
 
 
 (use-package embark-consult
+  :disabled ;; 2022-11-07 not used
   :ensure t
   :after (embark consult)
   :hook
@@ -993,7 +1003,6 @@ mode line."
 
 
 (use-package which-key
-  :disabled ;; 2022-06-04 can be replaced by `embark'
   :ensure t
   :diminish
   :defer 2
