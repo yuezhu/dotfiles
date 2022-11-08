@@ -691,17 +691,7 @@ mode line."
    '((consult-imenu (completion-ignore-case . t))
      (consult-recent-file (completion-ignore-case . t))))
   :config
-  (vertico-multiform-mode)
-
-  ;; https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow
-  (advice-add #'vertico--format-candidate :around
-              (lambda (orig cand prefix suffix index _start)
-                (setq cand (funcall orig cand prefix suffix index _start))
-                (concat
-                 (if (= vertico--index index)
-                     (propertize "» " 'face 'vertico-current)
-                   "  ")
-                 cand))))
+  (vertico-multiform-mode))
 
 
 (use-package orderless
@@ -732,7 +722,7 @@ mode line."
          ([remap projectile-ripgrep] . consult-ripgrep)
          )
   :bind (:map isearch-mode-map
-              ("C-." . consult-line))
+              ("M-o" . consult-line))
   :init
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
