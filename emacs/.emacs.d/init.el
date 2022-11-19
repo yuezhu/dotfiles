@@ -671,7 +671,7 @@ mode line."
          ("C-c c d" . crux-delete-file-and-buffer)))
 
 
-;; Do not allow the cursor to move onto the minibuffer prompt
+;; Prevent cursor from moving onto the minibuffer prompt
 (use-package cursor-sensor
   :init
   (setq minibuffer-prompt-properties
@@ -688,7 +688,9 @@ mode line."
   (vertico-multiform-categories
    '((buffer flat (vertico-cycle . t))))
   (vertico-multiform-commands
-   '((consult-imenu (completion-ignore-case . t))
+   '((consult-yank-pop indexed)
+     (consult-yank-replace indexed)
+     (consult-imenu (completion-ignore-case . t))
      (consult-recent-file (completion-ignore-case . t))))
   :config
   (vertico-multiform-mode))
