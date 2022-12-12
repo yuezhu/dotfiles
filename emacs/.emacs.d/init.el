@@ -1037,7 +1037,7 @@ mode line."
   ;; should be deferred due to the presence of `:hook'.
   (reformatter-define json-format
     :program "jq"
-    :args '("--monochrome-output" "--indent" "2"))
+    :args '("." "--monochrome-output" "--indent" "2"))
   (reformatter-define nxml-format
     :program "tidy"
     :args '("-indent" "-wrap" "0" "-omit" "-quiet" "-utf8" "-xml"))
