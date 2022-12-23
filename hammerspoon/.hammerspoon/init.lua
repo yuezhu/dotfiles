@@ -172,24 +172,6 @@ cfg.window.toggleFullScreen = function ()
 end
 
 --------------------------------------------------------------------------------
--- Audio
---------------------------------------------------------------------------------
-cfg.audio = {}
-
-cfg.audio.default = {
-  ['input'] = {
-    'Yue’s AirPods',
-    'External Microphone',
-    'MacBook Pro Microphone',
-  },
-  ['output'] = {
-    'Yue’s AirPods',
-    'External Headphones',
-    'MacBook Pro Speakers',
-  },
-}
-
---------------------------------------------------------------------------------
 -- Input methods auto switcher
 --------------------------------------------------------------------------------
 cfg.inputMethod = {}
@@ -461,19 +443,6 @@ cfg.caffeinate.menuBarItem:setMenu(function()
 end)
 
 --------------------------------------------------------------------------------
--- Display
---------------------------------------------------------------------------------
-cfg.display = {}
-
-cfg.display.kickTimer = hs.timer.delayed.new(5, function()
-  if os.execute('/usr/bin/sudo /usr/bin/pkill -9 corebrightnessd') == true then
-    log.df('kicked corebrightnessd')
-  else
-    log.ef('error kicking corebrightnessd')
-  end
-end)
-
---------------------------------------------------------------------------------
 -- Watchers
 --------------------------------------------------------------------------------
 cfg.watchers = {}
@@ -487,68 +456,10 @@ cfg.watchers.systemSleep = hs.caffeinate.watcher.new(function(evt)
       cfg.systemSlept = false
     elseif evt == hs.caffeinate.watcher.screensDidWake then
       log.df('screens woke')
-
-      -- kick corebrightnessd to fix TrueTone
-      if hs.host.localizedName() == 'C02CC1CDMD6M' then
-        cfg.display.kickTimer:start()
-      end
     end
 end)
 
 cfg.watchers.systemSleep:start()
-
--- cfg.watchers.application = hs.application.watcher.new(function(app, evt, obj)
---     if evt == hs.application.watcher.activated then
---       if app == 'Finder' then
---         obj:selectMenuItem({'Window', 'Bring All to Front'})
---       end
---     end
--- end)
-
--- cfg.watchers.application:start()
-
--- cfg.watchers.usb = hs.usb.watcher.new(function(data)
---     -- Auto launch or quit "Epson Scan 2"
---     if data['productName'] == 'EPSON Scanner' then
---       if data['eventType'] == 'added' then
---         -- if hs.application.launchOrFocus('Epson Scan 2') then
---         --   log.df('"Epson Scan 2" launched')
---         -- end
---       elseif data['eventType'] == 'removed' then
---         local app = hs.application.get('Epson Scan 2')
---         if app ~= nil and app:activate() then
---           hs.eventtap.event.newKeyEvent(hs.keycodes.map['return'], true):post()
---           log.df('"Epson Scan 2" terminated')
---         end
---       end
---     end
--- end)
-
--- cfg.watchers.usb:start()
-
--- cfg.watchers.reload = {}
-
--- cfg.watchers.reload.monitored = {
---   [hs.configdir .. '/init.lua'] = true,
--- }
-
--- cfg.watchers.reload.timer = hs.timer.delayed.new(2, function ()
---   hs.reload()
--- end)
-
--- cfg.watchers.reload.watcher = hs.pathwatcher.new(
---   hs.configdir,
---   function(paths)
---     for _, p in pairs(paths) do
---       if cfg.watchers.reload.monitored[p] then
---         cfg.watchers.reload.timer:start()
---         break
---       end
---     end
---   end
--- )
-
--- cfg.watchers.reload.watcher:start()
 
 --------------------------------------------------------------------------------
 -- Event taps
@@ -658,39 +569,9 @@ hs.hotkey.bind(cfg.hyper, 'm',     cfg.window.toggleMaximize)
 hs.hotkey.bind(cfg.hyper, 'f',     cfg.window.toggleFullScreen)
 hs.hotkey.bind(cfg.hyper, 'l',     hs.caffeinate.lockScreen)
 
-hs.hotkey.bind(cfg.hyper, 'g', function()
-    -- local file = '~/bin/google-meet-safari.applescript'
-    -- if hs.urlevent.getDefaultHandler('http') == 'com.google.Chrome' then
-    --   file = '~/bin/google-meet-chrome.applescript'
-    -- end
-
-    -- Set audio devices based on preferences
-    for _, name in ipairs(cfg.audio.default.input) do
-      local device = hs.audiodevice.findInputByName(name)
-      if device ~= nil then
-        if device:setDefaultInputDevice() then
-          log.df('set default input: %s', device:name())
-          break
-        end
-      end
-    end
-
-    for _, name in ipairs(cfg.audio.default.output) do
-      local device = hs.audiodevice.findOutputByName(name)
-      if device ~= nil then
-        if device:setDefaultOutputDevice() then
-          log.df('set default output: %s', device:name())
-          break
-        end
-      end
-    end
-
-    hs.osascript.applescriptFromFile(hs.fs.pathToAbsolute('~/bin/google-meet-chrome.applescript'))
-end)
-
 hs.hotkey.bind(cfg.hyper, 's', function()
     -- hold keys for a few seconds to trigger system sleep
-    local delay = 2
+    local delay = 3
 
     cfg.hotkey.timer = hs.timer.doAfter(delay, function()
         log.df('system sleep triggered')
