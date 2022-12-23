@@ -1494,9 +1494,10 @@ no region is activated, this will operate on the entire buffer."
     (if (or (< size 12) (> size 22))
         (user-error "Font size must be in the range [12, 22]"))
 
-    (set-face-attribute 'default nil :font (font-Hack size))
-
-    (when (equal system-type 'darwin)
+    (cond
+     ((equal system-type 'gnu/linux)
+      (set-face-attribute 'default nil :font (font-Hack size)))
+     ((equal system-type 'darwin)
       (dolist (charset '(han cjk-misc bopomofo))
         (set-fontset-font t charset (font-spec :family "STHeiTi")))
       (setq face-font-rescale-alist
@@ -1506,7 +1507,7 @@ no region is activated, this will operate on the entire buffer."
       (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
       ;; `variable-pitch' face uses the same height as the `default'.
       ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
-      (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0))
+      (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)))
 
     (set-frame-parameter nil 'fullscreen 'maximized))
 
