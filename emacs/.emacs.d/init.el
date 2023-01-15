@@ -1485,34 +1485,29 @@ no region is activated, this will operate on the entire buffer."
       (,(font-Hack 22)   . 20.0))
     "Font mapping to corresponding STHeiTi size.")
 
-  (defconst default-font-size 13
-    "Default font size")
+  (defun set-frame-font ()
+    (let ((font-size 14))
+      (cond
+       ((equal system-type 'gnu/linux)
+        (set-face-attribute 'default nil :font (font-Hack font-size)))
+       ((equal system-type 'darwin)
+        (set-face-attribute 'default nil :font (font-Menlo font-size))
+        (dolist (charset '(han cjk-misc bopomofo))
+          (set-fontset-font t charset (font-spec :family "STHeiTi")))
+        (setq face-font-rescale-alist
+              `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
+                                             STHeiTi-size-map))
+                                 font-size))))
+        (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
+        ;; `variable-pitch' face uses the same height as the `default'.
+        ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
+        (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)))))
 
-  (defun set-emacs-frame (&optional size)
-    (interactive "nFont Size: ")
-    (setq size (or size default-font-size))
-    (if (or (< size 12) (> size 22))
-        (user-error "Font size must be in the range [12, 22]"))
-
-    (cond
-     ((equal system-type 'gnu/linux)
-      (set-face-attribute 'default nil :font (font-Hack size)))
-     ((equal system-type 'darwin)
-      (dolist (charset '(han cjk-misc bopomofo))
-        (set-fontset-font t charset (font-spec :family "STHeiTi")))
-      (setq face-font-rescale-alist
-            `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
-                                           STHeiTi-size-map))
-                               size))))
-      (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
-      ;; `variable-pitch' face uses the same height as the `default'.
-      ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
-      (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)))
-
-    (set-frame-parameter nil 'fullscreen 'maximized))
-
-  (add-hook 'after-init-hook #'set-emacs-frame t)
-  (bind-key* "s-`" #'set-emacs-frame))
+  (add-hook 'after-init-hook
+            #'(lambda ()
+                (set-frame-font)
+                (set-frame-parameter nil 'fullscreen 'maximized))
+            t))
 
 
 ;;
