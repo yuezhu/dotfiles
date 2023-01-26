@@ -935,6 +935,7 @@ mode line."
 
 
 (use-package paredit
+  :disabled
   :ensure t
   :diminish
   :bind (:map lisp-mode-map       ("<return>" . paredit-newline))
