@@ -685,8 +685,6 @@ mode line."
   :hook (after-init . vertico-mode)
   :custom
   (vertico-count 20)
-  (vertico-multiform-categories
-   '((buffer flat (vertico-cycle . t))))
   (vertico-multiform-commands
    '((consult-yank-pop indexed)
      (consult-yank-replace indexed)
@@ -743,6 +741,7 @@ mode line."
     (setq consult-project-root-function #'projectile-project-root))
 
   :config
+  (require 'recentf)
   (consult-customize consult-ripgrep
                      consult-git-grep
                      consult-grep
@@ -752,7 +751,7 @@ mode line."
                      consult--source-recent-file
                      consult--source-project-recent-file
                      consult--source-bookmark
-                     :preview-key (kbd "M-.")))
+                     :preview-key "M-."))
 
 
 (use-package embark
