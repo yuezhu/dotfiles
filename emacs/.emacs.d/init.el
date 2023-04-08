@@ -1399,7 +1399,6 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package zenburn-theme
-  :disabled
   :ensure t
   :init
   (unless (display-graphic-p)
@@ -1415,6 +1414,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-night t)
