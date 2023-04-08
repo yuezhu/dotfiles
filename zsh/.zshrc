@@ -6,7 +6,8 @@ typeset -U fpath
 # On macOS, setting $path in the .zshenv does not produce the desired order
 # https://stackoverflow.com/a/63344431
 for d in \
-  /usr/local/sbin /usr/local/bin;
+  /usr/local/sbin \
+    /usr/local/bin;
 do
   if [[ -d "${d}" ]]; then
     path=("${d}" $path)
@@ -15,7 +16,8 @@ done
 
 # Golang
 for d in \
-  /usr/local/opt/go/libexec /usr/local/go;
+  /usr/local/opt/go/libexec \
+    /usr/local/go;
 do
   if [[ -d "${d}" ]]; then
     export GOROOT="${d}"
@@ -53,7 +55,8 @@ done
 
 # Prioritize my own binaries
 for d in \
-  "${HOME}/bin" "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
+  "${HOME}/bin" \
+    "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
   if [[ -d "${d}" ]]; then
     path=("${d}" $path)
@@ -166,7 +169,8 @@ setopt LIST_PACKED
 
 # Export LS_COLORS
 for f in \
-  /usr/local/bin/gdircolors /usr/bin/dircolors;
+  /usr/local/bin/gdircolors \
+    /usr/bin/dircolors;
 do
   if [[ -x "${f}" ]]; then
     eval "$("${f}" -b)"
