@@ -14,19 +14,9 @@
              (makunbound 'file-name-handler-alist-tmp)
              (garbage-collect)) t)
 
-
 ;;
-;; Use customizations
+;; Initialize ELPA
 ;;
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-
-(let ((elapsed (float-time (time-subtract (current-time)
-                                          emacs-start-time))))
-  (message "Loading %s (source)...done (%.3fs) (GC: %d)"
-           custom-file elapsed gcs-done))
-
-;; Initialize package
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (require 'init-elpa)
 
@@ -35,6 +25,9 @@
 ;; Initialize use-package
 ;; https://github.com/jwiegley/use-package
 ;;
+(setq use-package-enable-imenu-support t
+      use-package-verbose t)
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
@@ -50,73 +43,280 @@
   :commands diminish)
 
 
+(use-package emacs
+  :custom
+  (ns-alternate-modifier 'super)
+  (ns-command-modifier 'meta)
+  (confirm-kill-emacs 'yes-or-no-p)
+  (delete-by-moving-to-trash t)
+  (directory-free-space-args "-Pkh")
+  (enable-recursive-minibuffers t)
+  (fill-column 78)
+  (frame-resize-pixelwise t)
+  (history-delete-duplicates t)
+  (indent-tabs-mode nil)
+  (inhibit-startup-screen t)
+  (initial-major-mode 'fundamental-mode)
+  (initial-scratch-message nil)
+  (large-file-warning-threshold 50000000)
+  (make-backup-files nil)
+  (mark-ring-max 100)
+  (max-lisp-eval-depth 2000)
+  (max-specpdl-size 16384)
+  (message-log-max 16384)
+  (mode-require-final-newline t)
+  (require-final-newline t)
+  (ring-bell-function 'ignore)
+  (tab-always-indent 'complete)
+  (tab-width 4)
+  (undo-limit 1000000)
+  (use-dialog-box nil)
+  (use-file-dialog nil)
+  (use-short-answers t)
+  (x-stretch-cursor t)
+  :config
+  (add-hook 'after-save-hook
+            #'executable-make-buffer-file-executable-if-script-p)
+  :custom-face
+  (aw-leading-char-face
+   ((t (:inherit aw-leading-char-face :weight bold :height 3.0)))))
+
+
+(use-package mouse
+  :defer t
+  :custom
+  (mouse-drag-copy-region t)
+  (mouse-yank-at-point t))
+
+
+(use-package mwheel
+  :defer t
+  :custom
+  (mouse-wheel-progressive-speed nil))
+
+
+(use-package window
+  :defer t
+  :custom
+  (scroll-error-top-bottom t))
+
+
+(use-package delsel
+  :defer t
+  :custom
+  (delete-selection-mode t))
+
+
+(use-package cus-edit
+  :disabled
+  :defer t
+  :init
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (setq custom-buffer-done-kill t)
+  (load custom-file)
+  :config
+  (let ((elapsed (float-time (time-subtract (current-time)
+                                            emacs-start-time))))
+    (message "Loading %s (source)...done (%.3fs) (GC: %d)"
+             custom-file elapsed gcs-done)))
+
+
+(use-package image-file
+  :defer t
+  :custom
+  (auto-image-file-mode t))
+
+
+(use-package font-core
+  :defer t
+  :custom
+  (global-font-lock-mode t))
+
+
+(use-package frame
+  :defer t
+  :custom
+  (blink-cursor-mode nil))
+
+
 (use-package isearch
   :no-require t
   :bind (:map isearch-mode-map
               ;; DEL during isearch should edit the search string, not jump
               ;; back to the previous result
               ;; https://github.com/purcell/emacs.d/blob/b484cada4356803d0ecb063d33546835f996fefe/lisp/init-isearch.el#L14
-              ([remap isearch-delete-char] . isearch-del-char)))
+              ([remap isearch-delete-char] . isearch-del-char))
+  :custom
+  (isearch-allow-scroll t)
+  (search-highlight t))
+
+
+(use-package replace
+  :defer t
+  :custom
+  (list-matching-lines-default-context-lines 3)
+  (query-replace-highlight t))
+
+
+(use-package select
+  :defer t
+  :custom
+  (select-enable-clipboard t))
 
 
 (use-package uniquify
-  :defer t)
+  :defer t
+  :custom
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-buffer-name-style
+   'post-forward-angle-brackets nil (uniquify)))
 
 
 (use-package hl-line
+  :defer t
   :hook ((dired-mode
           magit-mode
           occur-mode
           ibuffer-mode
           compilation-mode
-          gnus-mode)
-         . hl-line-mode)
-  :defer t)
+          gnus-mode) . hl-line-mode))
 
 
 (use-package goto-addr
+  :defer t
   :hook
   (prog-mode . goto-address-prog-mode)
-  ((text-mode magit-process-mode) . goto-address-mode)
-  :defer t)
+  ((text-mode magit-process-mode) . goto-address-mode))
 
 
 (use-package display-fill-column-indicator
+  :defer t
   :hook
   (auto-fill-mode
    . (lambda ()
-       (display-fill-column-indicator-mode (if auto-fill-function 1 -1))))
-  :defer t)
+       (display-fill-column-indicator-mode
+        (if auto-fill-function 1 -1)))))
 
 
 (use-package simple
+  :defer t
   :diminish auto-fill-function
   :hook ((org-mode
           markdown-mode
           prog-mode
-          protobuf-mode)
-         . turn-on-auto-fill)
+          protobuf-mode) . turn-on-auto-fill)
   :hook (((occur-mode
            dired-mode
            speedbar-mode
-           compilation-mode)
-          . (lambda () (visual-line-mode -1))))
-  :defer t)
+           compilation-mode) . (lambda () (visual-line-mode -1))))
+  :custom
+  (global-mark-ring-max 500)
+  (kill-do-not-save-duplicates t)
+  (kill-ring-max 1000000)
+  (kill-whole-line nil)
+  (next-line-add-newlines nil)
+  (size-indication-mode t)
+  (line-number-mode t)
+  (transient-mark-mode t)
+  (column-number-mode t))
 
 
-(use-package xref
-  :commands (xref-pulse-momentarily
-             xref-push-marker-stack))
+(use-package ns-win
+  :defer t
+  :custom
+  (ns-pop-up-frames nil))
 
 
 (use-package subword
+  :defer t
   :diminish
-  :defer t)
+  :custom
+  (global-subword-mode t))
+
+
+(use-package xref
+  :defer t
+  :commands (xref-pulse-momentarily
+             xref-push-marker-stack)
+  :custom
+  (xref-prompt-for-identifier nil))
+
+
+(use-package autorevert
+  :defer 2
+  :custom
+  (auto-revert-verbose t)
+  (global-auto-revert-non-file-buffers t)
+  :config
+  (global-auto-revert-mode t))
+
+
+(use-package time
+  :defer 2
+  :custom
+  (display-time-day-and-date nil)
+  :config
+  (display-time-mode t))
+
+
+(use-package so-long
+  :defer 2
+  :config
+  (global-so-long-mode t))
 
 
 (use-package eldoc
+  ;; Loaded by something else; defer 2 doesn't work.
+  :defer 2
   :diminish
-  :defer t)
+  :hook
+  (prog-mode . global-eldoc-mode)
+  :config
+  (global-eldoc-mode t))
+
+
+(use-package which-func
+  :defer 2
+  :custom
+  (which-func-unknown "n/a")
+  :hook
+  (prog-mode . which-function-mode)
+  :config
+  (which-function-mode t))
+
+
+(use-package electric
+  ;; Loaded by something else; defer 2 doesn't work.
+  :defer 2
+  :hook
+  (prog-mode . electric-indent-mode)
+  :config
+  (electric-indent-mode t))
+
+
+(use-package elec-pair
+  :defer 2
+  :custom
+  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  :hook
+  (prog-mode . electric-pair-mode)
+  :config
+  (electric-pair-mode t))
+
+
+(use-package ediff-wind
+  :defer t
+  :custom
+  (ediff-split-window-function 'split-window-horizontally)
+  (ediff-window-setup-function 'ediff-setup-windows-plain))
+
+
+(use-package gnutls
+  :defer t
+  :custom
+  (gnutls-algorithm-priority "SECURE192:+SECURE128:-VERS-ALL:+VERS-TLS1.2")
+  (gnutls-min-prime-bits 4096)
+  (gnutls-verify-error t))
 
 
 (use-package ialign
@@ -142,6 +342,7 @@
 
 (use-package winner
   :unless noninteractive
+  :defer 2
   :preface
   (defun transient-winner-undo ()
     "Transient version of `winner-undo'."
@@ -163,8 +364,6 @@
   (ediff-before-setup . winner-mode)
   (ediff-quit . winner-undo)
 
-  :defer 2
-
   :config
   (winner-mode))
 
@@ -175,7 +374,23 @@
   (midnight-mode))
 
 
+(use-package repeat
+  :defer t
+  :custom
+  (repeat-exit-key [return])
+  (repeat-mode t))
+
+
+(use-package paren
+  :defer t
+  :custom
+  (show-paren-delay 0)
+  (show-paren-mode t)
+  (show-paren-style 'parentheses))
+
+
 (use-package recentf
+  :defer 2
   :preface
   ;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
   (defun recentf-add-dired-directory ()
@@ -203,6 +418,18 @@
               (recentf-expand-file-name filename) recentf-list)))
       (and m (setq recentf-list (delq (car m) recentf-list)))))
 
+  :custom
+  (recentf-auto-cleanup 60)
+  (recentf-exclude
+   '("\\`out\\'"
+     "\\.log\\'"
+     "\\.el\\.gz\\'"
+     "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'"
+     "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)"
+     "/\\.git/COMMIT_EDITMSG\\'"))
+  (recentf-filename-handlers '(abbreviate-file-name))
+  (recentf-max-saved-items 2000)
+
   :hook
   (dired-mode . recentf-add-dired-directory)
 
@@ -210,9 +437,6 @@
              recentf-add-file
              recentf-save-list
              recentf-string-member)
-
-  ;; Loaded by `consult'
-  :defer 2
 
   :config
   (recentf-mode)
@@ -230,6 +454,7 @@ cleaning up `recentf-list'."
 
 
 (use-package whitespace
+  :defer t
   :bind (("C-c w m" . whitespace-mode)
          ("C-c w r" . whitespace-report)
          ("C-c w c" . whitespace-cleanup))
@@ -241,17 +466,31 @@ cleaning up `recentf-list'."
           conf-mode
           json-mode
           yaml-mode)
-         . whitespace-mode))
+         . whitespace-mode)
+  :custom
+  (whitespace-line-column 100)
+  (whitespace-style '(face trailing tabs)))
 
 
 (use-package ispell
-  :bind ("C-c i w" . ispell-word))
+  :defer t
+  :bind ("C-c i w" . ispell-word)
+  :custom
+  (ispell-extra-args
+   '("--sug-mode=normal" "--ignore=2" "--run-together" "--camel-case"))
+  (ispell-local-dictionary
+   "en_US")
+  (ispell-personal-dictionary
+   "~/.emacs.d/ispell-personal-dictionary")
+  (ispell-silently-savep t))
 
 
 (use-package flyspell
   :bind ("C-c i b" . flyspell-buffer)
   ;; :hook
   ;; (text-mode . flyspell-mode)
+  :custom
+  (flyspell-sort-corrections t)
   :config
   ;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-flyspell.el
   (defun flyspell-ignore-http-and-https ()
@@ -294,6 +533,19 @@ cleaning up `recentf-list'."
        (unless (eq ibuffer-sorting-mode 'filename/process)
          (ibuffer-do-sort-by-filename/process))))
 
+  :custom
+  (ibuffer-filter-group-name-face 'font-lock-doc-face)
+  (ibuffer-formats
+   '((mark modified read-only vc-status-mini " "
+           (name 32 32 :left :elide)
+           " "
+           (size-h 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " "
+           (vc-status 16 -1 :left)
+           " " filename-and-process)))
+
   :config
   (define-ibuffer-column size-h
     (:name "Size" :inline t)
@@ -309,13 +561,14 @@ cleaning up `recentf-list'."
 
 
 (use-package hideshow
+  :defer t
   :diminish hs-minor-mode
-  :hook (prog-mode . hs-minor-mode)
-  :defer t)
+  :hook (prog-mode . hs-minor-mode))
 
 
 (use-package diff-hl
   :ensure t
+  :defer t
   :hook ((prog-mode
           conf-mode
           text-mode
@@ -324,21 +577,27 @@ cleaning up `recentf-list'."
          . diff-hl-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh)
-  :defer t)
+  :custom
+  (diff-hl-draw-borders nil))
 
 
 (use-package tramp-sh
+  :defer t
   :init
   ;; https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
-  (setq vc-ignore-dir-regexp
-        (format "\\(%s\\)\\|\\(%s\\)"
-                vc-ignore-dir-regexp
-                tramp-file-name-regexp))
-  :defer t)
+  (setq
+   vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)"
+           vc-ignore-dir-regexp
+           tramp-file-name-regexp)
+   tramp-connection-timeout 15
+   tramp-default-method "ssh"
+   tramp-use-ssh-controlmaster-options nil))
 
 
 (use-package rg
   :ensure t
+  :defer t
   :bind ("C-c s" . rg-menu)
   :config
   (add-to-list 'display-buffer-alist
@@ -350,13 +609,16 @@ cleaning up `recentf-list'."
 
 (use-package dumb-jump
   :ensure t
+  :defer t
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  :defer t)
+  :custom
+  (dumb-jump-force-searcher 'rg))
 
 
 (use-package hippie-exp
   :bind ("M-/" . hippie-expand)
+  :defer t
   :config
   (advice-add 'hippie-expand :around
               (lambda (func &rest args)
@@ -368,6 +630,7 @@ functions, eg., `try-expand-all-abbrevs'"
 
 
 (use-package dired
+  :defer t
   :preface
   (defun dired-find-directory (dir)
     (interactive "DFind directory: ")
@@ -425,33 +688,66 @@ functions, eg., `try-expand-all-abbrevs'"
              (executable-find "gls"))
     (setq insert-directory-program "gls"))
 
-  (setq dired-listing-switches
-        (cond
-         ((equal system-type 'gnu/linux)
-          "-Ahl --group-directories-first")
-         ((equal system-type 'darwin)
-          (if (string-suffix-p "gls" insert-directory-program)
-              "-Alh --group-directories-first"
-            "-Ahl")))))
+  (setq
+   dired-listing-switches
+   (cond
+    ((equal system-type 'gnu/linux)
+     "-Ahl --group-directories-first")
+    ((equal system-type 'darwin)
+     (if (string-suffix-p "gls" insert-directory-program)
+         "-Alh --group-directories-first"
+       "-Ahl")))
+   dired-dwim-target t
+   dired-isearch-filenames 'dwim
+   dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$"
+   dired-omit-size-limit nil
+   dired-omit-verbose nil
+   dired-recursive-copies 'always
+   dired-recursive-deletes 'always))
 
 
 (use-package diredfl
   :ensure t
+  :defer t
   :hook
-  (dired-mode . diredfl-mode)
-  :defer t)
+  (dired-mode . diredfl-mode))
 
 
 (use-package dired-x
   :disabled
+  :defer t
   :hook
-  (dired-mode . dired-omit-mode)
-  :defer t)
+  (dired-mode . dired-omit-mode))
 
 
 (use-package flycheck
   :ensure t
   :defer 2
+  :custom
+  (flycheck-disabled-checkers
+   '(c/c++-cppcheck
+     c/c++-gcc
+     go-build
+     go-errcheck
+     go-gofmt
+     go-golint
+     go-staticcheck
+     go-test
+     go-unconvert
+     go-vet
+     json-jsonlint
+     json-python-json
+     python-mypy
+     python-pycompile
+     python-pyright
+     ruby-rubocop
+     sh-bash
+     sh-posix-bash
+     sh-posix-dash
+     sh-zsh
+     yaml-jsyaml
+     yaml-ruby
+     emacs-lisp-checkdoc))
   :config
   (global-flycheck-mode 1))
 
@@ -477,7 +773,17 @@ followed by a space."
               ("C-f" . company-search-toggle-filtering))
 
   :hook
-  (after-init . global-company-mode))
+  (after-init . global-company-mode)
+
+  :custom
+  (company-backends
+   '((company-capf company-dabbrev-code :separate)
+     company-files company-keywords company-dabbrev))
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-minimum-length 2)
+  (company-minimum-prefix-length 2)
+  (company-selection-wrap-around t)
+  (company-transformers '(delete-dups)))
 
 
 (use-package company-quickhelp
@@ -512,6 +818,18 @@ followed by a space."
               ("C-c l i" . eglot-find-implementation)
               ("C-c l r" . eglot-rename))
 
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-events-buffer-size 0)
+  (eglot-ignored-server-capabilites
+   '(:documentHighlightProvider
+     :codeActionProvider
+     :codeLensProvider
+     :documentFormattingProvider
+     :documentRangeFormattingProvider
+     :documentOnTypeFormattingProvider
+     :documentLinkProvider))
+
   :config
   (add-to-list 'eglot-stay-out-of 'flymake-diagnostic-functions))
 
@@ -525,6 +843,7 @@ followed by a space."
   ;; `:disabled' is not a supported option, but can disable the diagnostics.
   ;; 06/01/21 start using LSP diagnostics
   ;; (setq lsp-diagnostics-provider :disabled)
+  :defer t
   :hook
   (go-mode
    . (lambda ()
@@ -539,7 +858,23 @@ followed by a space."
 
   (lsp-mode . lsp-enable-which-key-integration)
 
-  :defer t)
+  :custom
+  (lsp-enable-dap-auto-configure nil)
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-folding nil)
+  (lsp-enable-indentation nil)
+  (lsp-enable-links nil)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-enable-symbol-highlighting nil)
+  (lsp-enable-text-document-color nil)
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-keep-workspace-alive nil)
+  (lsp-lens-enable nil)
+  (lsp-modeline-code-actions-enable nil)
+  (lsp-modeline-diagnostics-enable nil)
+  (lsp-progress-function 'lsp-on-progress-legacy)
+  (lsp-signature-auto-activate nil)
+  (lsp-signature-render-documentation nil))
 
 
 (use-package ccls
@@ -551,6 +886,7 @@ followed by a space."
 
 (use-package projectile
   :ensure t
+  :defer 2
   :preface
   (defun projectile-set-env ()
     "Set environment based on the current project."
@@ -586,13 +922,20 @@ mode line."
              projectile-project-root
              projectile-update-mode-line)
 
-  :defer 2
-
   ;; If not calling `projectile-set-env' in the `find-file-hook', the
   ;; `lsp-go-directory-filters' set in that function won't be picked up by
   ;; `lsp-mode' for some reason.
   :hook
   (find-file . projectile-set-env)
+
+  :custom
+  (projectile-enable-caching t)
+  (projectile-file-exists-local-cache-expire 300)
+  (projectile-files-cache-expire 259200)
+  (projectile-find-dir-includes-top-level t)
+  (projectile-mode-line-prefix " ")
+  (projectile-sort-order 'recentf)
+  (projectile-switch-project-action 'projectile-dired)
 
   :config
   (let ((project (alist-get 'go projectile-project-types)))
@@ -612,6 +955,7 @@ mode line."
 
 (use-package yasnippet
   :ensure t
+  :defer t
   :diminish yas-minor-mode
   :mode ("/\\.emacs\\.d/snippets/" . snippet-mode)
   :hook ((text-mode
@@ -628,6 +972,9 @@ mode line."
 
 
 (use-package abbrev
+  ;; Defer does not work. It is loaded somewhere else.
+  ;; 09/11/20 `enh-ruby-mode' loads `abbrev'.
+  :defer t
   :diminish
   :hook
   ;; ((text-mode prog-mode) . abbrev-mode)
@@ -637,9 +984,8 @@ mode line."
        (add-hook 'expand-jump-hook #'indent-according-to-mode)))
   :commands abbrev-mode ;; `cc-mode' turns on `abbrev-mode'.
 
-  ;; Defer does not work. It is loaded somewhere else.
-  ;; 09/11/20 `enh-ruby-mode' loads `abbrev'.
-  :defer t
+  :custom
+  (save-abbrevs 'silently)
 
   :config
   (if (file-exists-p abbrev-file-name)
@@ -647,6 +993,7 @@ mode line."
 
 
 (use-package imenu
+  :defer t
   :preface
   (defun imenu-rescan ()
     "Rescan the buffer to refresh the imenu index"
@@ -660,11 +1007,17 @@ mode line."
   ((emacs-lisp-mode
     go-mode
     markdown-mode)
-   . imenu-add-menubar-index))
+   . imenu-add-menubar-index)
+
+  :custom
+  (imenu-auto-rescan t)
+  (imenu-auto-rescan-maxout 600000)
+  (imenu-max-item-length "Unlimited"))
 
 
 (use-package crux
   :ensure t
+  :defer t
   :bind (("C-c c t" . crux-transpose-windows)
          ("C-c c i" . crux-find-user-init-file)
          ("C-c c r" . crux-rename-file-and-buffer)
@@ -673,6 +1026,7 @@ mode line."
 
 ;; Prevent cursor from moving onto the minibuffer prompt
 (use-package cursor-sensor
+  :defer t
   :init
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
@@ -782,22 +1136,29 @@ mode line."
 
 (use-package ace-window
   :ensure t
-  :bind ("M-o" . ace-window))
+  :defer t
+  :bind ("M-o" . ace-window)
+  :custom
+  (aw-scope 'frame))
 
 
 (use-package ace-link
   :ensure t
+  :defer t
   :bind ("C-c j a" . ace-link-addr))
 
 
 (use-package avy
   :ensure t
+  :defer t
   :bind (("C-c j c" . avy-goto-char)
          ("C-c j w" . avy-goto-word-1)
          ("C-c j l" . avy-goto-line)
          ("C-c j j" . avy-resume))
   :bind (:map isearch-mode-map
-              ("C-," . avy-isearch)))
+              ("C-," . avy-isearch))
+  :custom
+  (avy-case-fold-search t))
 
 
 (use-package compile
@@ -822,10 +1183,16 @@ mode line."
 
   :init
   (add-hook 'compilation-finish-functions
-            #'delete-compile-windows-if-success))
+            #'delete-compile-windows-if-success)
+
+  :custom
+  (compilation-always-kill t)
+  (compilation-context-lines 10)
+  (compilation-scroll-output t))
 
 
 (use-package comint
+  :defer t
   :preface
   (defun comint-output-read-only (&optional _string)
     "Add to comint-output-filter-functions to make comint output read only."
@@ -841,22 +1208,32 @@ mode line."
   (add-hook 'comint-output-filter-functions #'ansi-color-process-output)
   (add-hook 'comint-mode-hook #'ansi-color-for-comint-mode-on)
 
-  :defer t)
+  :custom
+  (comint-buffer-maximum-size 16384)
+  (comint-completion-addsuffix t)
+  (comint-input-ignoredups t)
+  (comint-input-ring-size 16384)
+  (comint-move-point-for-output nil)
+  (comint-prompt-read-only t)
+  (comint-scroll-show-maximum-output t)
+  (comint-scroll-to-bottom-on-input t))
 
 
 (use-package term
+  :defer t
   :hook (term-mode
          . (lambda ()
              (setq term-prompt-regexp "^[^#$]+[#$] ")
              (setq-local transient-mark-mode nil)
-             (auto-fill-mode -1)))
-  :defer t)
+             (auto-fill-mode -1))))
 
 
 (use-package terminal-here
   :ensure t
   :if window-system
-  :defer t)
+  :defer t
+  :custom
+  (terminal-here-mac-terminal-command 'iterm2))
 
 
 (use-package cwarn
@@ -865,6 +1242,7 @@ mode line."
 
 
 (use-package ps-print
+  :defer t
   :preface
   (defun ps-print-to-file (file-name)
     "Prints the buffer to PostScript file"
@@ -886,18 +1264,60 @@ mode line."
              ps-spool-buffer
              ps-spool-buffer-with-faces
              ps-spool-region
-             ps-spool-region-with-faces))
+             ps-spool-region-with-faces)
+
+  :custom
+  (ps-bottom-margin 19.84251968503937)
+  (ps-font-family 'Courier)
+  (ps-font-size 6.0)
+  (ps-header-font-family 'Courier)
+  (ps-header-font-size 8.0)
+  (ps-header-line-pad 0.25)
+  (ps-header-lines 1)
+  (ps-header-offset 14.173228346456693)
+  (ps-header-title-font-size 8.0)
+  (ps-inter-column 19.84251968503937)
+  (ps-landscape-mode t)
+  (ps-left-margin 19.84251968503937)
+  (ps-lpr-switches '("-o sides=two-sided-short-edge"))
+  (ps-number-of-columns 2)
+  (ps-paper-type 'letter)
+  (ps-print-color-p 'black-white)
+  (ps-print-footer nil)
+  (ps-print-header t)
+  (ps-print-header-frame t)
+  (ps-printer-name "HP LaserJet Professional P 1102w")
+  (ps-printer-name-option "-P")
+  (ps-right-margin 19.84251968503937)
+  (ps-show-n-of-n t)
+  (ps-spool-duplex t)
+  (ps-top-margin 19.84251968503937)
+  (ps-warn-paper-type t))
 
 
 (use-package org
   :ensure t
+  :defer t
   :pin gnu
   :hook
   (org-mode
    . (lambda ()
        (org-indent-mode 1)
        (setq-local fill-column 120)))
-  :defer t)
+  :custom
+  (org-catch-invisible-edits t)
+  (org-export-default-language "en")
+  (org-export-with-creator t)
+  (org-export-with-section-numbers nil)
+  (org-export-with-sub-superscripts '{})
+  (org-export-with-toc nil)
+  (org-hide-leading-stars t)
+  (org-html-extension "html")
+  (org-html-htmlize-output-type 'inline-css)
+  (org-image-actual-width nil)
+  (org-log-done 'time)
+  (org-src-fontify-natively t)
+  (org-startup-folded "nofold"))
 
 
 (use-package org-make-toc
@@ -920,11 +1340,16 @@ mode line."
   :ensure t
   :mode (("\\.md\\'"       . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :hook (markdown-mode . markdown-toc-mode))
+  :hook (markdown-mode . markdown-toc-mode)
+  :custom
+  (markdown-command "multimarkdown")
+  (markdown-nested-imenu-heading-index nil)
+  (markdown-toc-header-toc-title "# Table of Contents"))
 
 
 (use-package markdown-toc
   :ensure t
+  :defer t
   :diminish
   :hook
   (markdown-mode
@@ -944,19 +1369,24 @@ mode line."
 
 (use-package aggressive-indent
   :ensure t
+  :defer t
   :diminish
-  :hook (emacs-lisp-mode . aggressive-indent-mode))
+  :hook (emacs-lisp-mode . aggressive-indent-mode)
+  :custom
+  (aggressive-indent-dont-indent-if
+   '((string-match "^\\s-+$" (thing-at-point 'line)))))
 
 
 (use-package rainbow-delimiters
   :ensure t
+  :defer t
   :hook ((prog-mode ielm-mode) . rainbow-delimiters-mode))
 
 
 (use-package highlight-escape-sequences
   :ensure t
-  :hook (prog-mode . hes-mode)
   :defer t
+  :hook (prog-mode . hes-mode)
   :config
   (put 'hes-escape-backslash-face 'face-alias 'font-lock-builtin-face)
   (put 'hes-escape-sequence-face 'face-alias 'font-lock-builtin-face)
@@ -965,8 +1395,9 @@ mode line."
 
 
 (use-package highlight-indent-guides
-  :diminish
   :ensure t
+  :defer t
+  :diminish
   :init
   (setq highlight-indent-guides-method 'character)
   :hook ((yaml-mode json-mode) . highlight-indent-guides-mode))
@@ -974,9 +1405,12 @@ mode line."
 
 (use-package git-link
   :ensure t
+  :defer t
   :bind (("C-c g l" . git-link)
          ("C-c g c" . git-link-commit)
-         ("C-c g h" . git-link-homepage)))
+         ("C-c g h" . git-link-homepage))
+  :custom
+  (git-link-use-commit t))
 
 
 (use-package magit
@@ -991,13 +1425,15 @@ mode line."
   (add-to-list 'display-buffer-alist
                '("\\`magit-process:"
                  (display-buffer-in-direction)
-                 (direction . right))))
+                 (direction . right)))
+  :custom
+  (magit-commit-show-diff nil))
 
 
 (use-package which-key
   :ensure t
-  :diminish
   :defer 2
+  :diminish
   :config
   (which-key-mode))
 
@@ -1015,11 +1451,13 @@ mode line."
 
 (use-package unfill
   :ensure t
+  :defer t
   :bind ([remap fill-paragraph] . unfill-toggle))
 
 
 (use-package reformatter
   :ensure t
+  :defer t
   :config
   (add-to-list 'display-buffer-alist
                '("\\`\\*.*-format errors\\*\\'"
@@ -1070,6 +1508,7 @@ mode line."
 
 
 (use-package prog-mode
+  :defer t
   :preface
   (defun indent-delete-trailing-whitespace (&optional beg end)
     "Delete trailing whitespace and indent for selected region. If
@@ -1094,11 +1533,11 @@ no region is activated, this will operate on the entire buffer."
                1 font-lock-warning-face prepend)))))
 
   :bind (:map prog-mode-map
-              ("<f12>" . indent-delete-trailing-whitespace))
-  :defer t)
+              ("<f12>" . indent-delete-trailing-whitespace)))
 
 
 (use-package conf-mode
+  :defer t
   :hook
   (conf-mode
    . (lambda ()
@@ -1124,18 +1563,21 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package make-mode
+  :defer t
   :mode ("/Makefile\\..*" . makefile-gmake-mode)
   :hook
-  (makefile-mode . (lambda () (setq-local indent-tabs-mode t)))
-  :defer t)
+  (makefile-mode . (lambda () (setq-local indent-tabs-mode t))))
 
 
 (use-package sh-script
   :mode ("\\.zsh_custom\\'" . sh-mode)
-  :defer t)
+  :defer t
+  :custom
+  (sh-basic-offset 2))
 
 
 (use-package cc-mode
+  :defer t
   :bind
   (:map c-mode-base-map
         ("M-q" . c-fill-paragraph))
@@ -1146,8 +1588,6 @@ no region is activated, this will operate on the entire buffer."
   :hook
   (c-mode-common . (lambda () (cwarn-mode 1)))
   (c++-mode . (lambda () (c-set-style "clang")))
-
-  :defer t
 
   :config
   (unbind-key "C-c C-c" c++-mode-map)
@@ -1194,6 +1634,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package nxml-mode
+  :defer t
   :hook
   (nxml-mode
    . (lambda ()
@@ -1208,7 +1649,10 @@ no region is activated, this will operate on the entire buffer."
          (setq-local nxml-child-indent 4)
          (setq-local nxml-outline-child-indent 4))))
 
-  :defer t
+  :custom
+  (nxml-child-indent 2)
+  (nxml-outline-child-indent 2)
+  (nxml-slash-auto-complete-flag t)
 
   :config
   (require 'sgml-mode))
@@ -1216,48 +1660,56 @@ no region is activated, this will operate on the entire buffer."
 
 (use-package applescript-mode
   :ensure t
+  :defer t
   :bind (:map as-mode-map
-              ("<tab>" . tab-to-tab-stop))
-  :defer t)
+              ("<tab>" . tab-to-tab-stop)))
 
 
 (use-package js
   :if (>= emacs-major-version 27)
+  :defer t
   :mode ("\\.pac\\'" . js-mode)
   :mode ("\\.jsx?\\'" . js-jsx-mode)
-  :defer t)
+  :custom
+  (js-indent-level 2))
 
 
 (use-package ruby-mode
   :disabled
-  :interpreter "ruby"
-  :defer t)
+  :defer t
+  :interpreter "ruby")
 
 
 (use-package enh-ruby-mode
   :ensure t
+  :defer t
   :mode "\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'"
   :interpreter "ruby"
   :hook
   (enh-ruby-mode . (lambda () (setq-local tab-width 2)))
-  :defer t)
+  :custom
+  (enh-ruby-check-syntax nil))
 
 
 (use-package rspec-mode
   :ensure t
-  :diminish
-  :defer t)
+  :defer t
+  :diminish)
 
 
 (use-package lua-mode
   :ensure t
+  :defer t
   :interpreter ("lua" . lua-mode)
   :mode "\\.lua\\.erb\\'"
-  :defer t)
+  :custom
+  (lua-indent-level 2)
+  (lua-indent-nested-block-content-align nil))
 
 
 (use-package go-mode
   :ensure t
+  :defer t
   :bind
   (:map go-mode-map ("<f12>" . gofmt))
   :hook
@@ -1266,8 +1718,8 @@ no region is activated, this will operate on the entire buffer."
        (setq-local indent-tabs-mode t)
        (setq-local tab-width 4)
        (add-hook 'before-save-hook #'gofmt t t)))
-  :defer t
-
+  :custom
+  (gofmt-command "goimports")
   :config
   (add-to-list 'display-buffer-alist
                '("\\`\\*\\(Gofmt Errors\\|go-rename\\)\\*\\'"
@@ -1308,42 +1760,42 @@ no region is activated, this will operate on the entire buffer."
   :load-path "lisp/upstart-mode"
   :pin manual
   :commands upstart-mode
+  :defer t
   :mode "\\.upstart\\'")
 
 
 (use-package yaml-mode
   :ensure t
+  :defer t
   :mode "/\\.config/yamllint/config\\'"
   :mode "/\\(group\\|host\\)_vars/"
   :mode "/\\.flyrc\\'"
-  :mode "/\\.clang-format\\'"
-  :defer t)
+  :mode "/\\.clang-format\\'")
 
 
 (use-package terraform-mode
   :ensure t
-  :hook (terraform-mode . turn-off-auto-fill)
-  :defer t)
+  :defer t
+  :hook (terraform-mode . turn-off-auto-fill))
 
 
 (use-package protobuf-mode
   :ensure t
+  :defer t
   :hook
   (protobuf-mode
    . (lambda ()
        (c-add-style "my-protobuf-style"
                     '((c-basic-offset   . 2)
                       (indent-tabs-mode . nil))
-                    t)))
-
-  :defer t)
+                    t))))
 
 
 (use-package json-mode
   :ensure t
+  :defer t
   :hook
-  (json-mode . (lambda () (setq-local tab-width 2)))
-  :defer t)
+  (json-mode . (lambda () (setq-local tab-width 2))))
 
 
 (use-package ovpn-mode
@@ -1355,13 +1807,16 @@ no region is activated, this will operate on the entire buffer."
   :ensure t
   :bind (:map jsonnet-mode-map
               ("M-." . jsonnet-jump))
-  :mode "\\.\\(jsonnet\\|libsonnet\\)\\'"
   :defer t
+  :mode "\\.\\(jsonnet\\|libsonnet\\)\\'"
   :config
   ;; Unbind non-standard keybindings for `jsonnet-jump' and
   ;; `jsonnet-reformat-buffer'
   (unbind-key "C-c C-f" jsonnet-mode-map)
-  (unbind-key "C-c C-r" jsonnet-mode-map))
+  (unbind-key "C-c C-r" jsonnet-mode-map)
+  :custom
+  (jsonnet-indent-level 2)
+  (jsonnet-use-smie t))
 
 
 (use-package jinja2-mode
@@ -1399,6 +1854,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package zenburn-theme
+  :disabled
   :ensure t
   :init
   (unless (display-graphic-p)
@@ -1414,10 +1870,9 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'sanityinc-tomorrow-bright t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
@@ -1525,12 +1980,14 @@ no region is activated, this will operate on the entire buffer."
 ;;
 ;; Configure additional keybindings
 ;;
+(bind-key "C-x k"           #'kill-this-buffer)
 (bind-key "<C-M-backspace>" #'backward-kill-sexp)
 (when (display-graphic-p) (unbind-key "C-z"))
 
-
+;;
 ;; Display elapsed time
 ;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
+;;
 (let ((elapsed (float-time (time-subtract (current-time)
                                           emacs-start-time))))
   (message "Loading %s...done (%.3fs) (GC: %d)"

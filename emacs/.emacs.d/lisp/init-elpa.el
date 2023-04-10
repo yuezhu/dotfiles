@@ -62,9 +62,9 @@ installed with the current version in ELPA
                   result)))))
     result))
 
-(defun package-do-upgrade ()
+(defun run-package-upgrade ()
   "Upgrade all ELPA packages to their latest versions."
-  (remove-hook 'package--post-download-archives-hook #'package-do-upgrade)
+  (remove-hook 'package--post-download-archives-hook #'run-package-upgrade)
   (let* ((packages (package-update))
          (msg (mapconcat #'package-desc-full-name packages ", "))
          (num (length packages))
@@ -91,7 +91,7 @@ Optional argument ASYNC specifies whether to perform the
 downloads in the background."
   (interactive)
   (message "Package refresh started at %s" (current-time-string))
-  (add-hook 'package--post-download-archives-hook  #'package-do-upgrade)
+  (add-hook 'package--post-download-archives-hook  #'run-package-upgrade)
   (package-refresh-contents async))
 
 (defun dump-into-file (data filename)
