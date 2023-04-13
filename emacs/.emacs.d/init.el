@@ -108,12 +108,12 @@
 
 
 (use-package cus-edit
-  :disabled
   :defer t
   :init
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (setq custom-buffer-done-kill t)
-  (load custom-file)
+  ;; I don't use "M-x customize", so don't load `custom-file'.
+  ;; (load custom-file)
   :config
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
