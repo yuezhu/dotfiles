@@ -44,6 +44,7 @@
 
 
 (use-package emacs
+  :defer t
   :custom
   (ns-alternate-modifier 'super)
   (ns-command-modifier 'meta)
@@ -74,12 +75,12 @@
   (use-file-dialog nil)
   (use-short-answers t)
   (x-stretch-cursor t)
-  :config
-  (add-hook 'after-save-hook
-            #'executable-make-buffer-file-executable-if-script-p)
   :custom-face
   (aw-leading-char-face
-   ((t (:inherit aw-leading-char-face :weight bold :height 3.0)))))
+   ((t (:inherit aw-leading-char-face :weight bold :height 3.0))))
+  :init
+  (add-hook 'after-save-hook
+            #'executable-make-buffer-file-executable-if-script-p))
 
 
 (use-package mouse
@@ -113,12 +114,13 @@
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (setq custom-buffer-done-kill t)
   ;; I don't use "M-x customize", so don't load `custom-file'.
-  ;; (load custom-file)
-  :config
-  (let ((elapsed (float-time (time-subtract (current-time)
-                                            emacs-start-time))))
-    (message "Loading %s (source)...done (%.3fs) (GC: %d)"
-             custom-file elapsed gcs-done)))
+  ;; :config
+  ;; (load custom-file 'noerror)
+  ;; (let ((elapsed (float-time (time-subtract (current-time)
+  ;;                                           emacs-start-time))))
+  ;;   (message "Loading %s (source)...done (%.3fs) (GC: %d)"
+  ;;            custom-file elapsed gcs-done))
+  )
 
 
 (use-package image-file
@@ -384,8 +386,8 @@
 (use-package paren
   :defer t
   :custom
-  (show-paren-delay 0)
   (show-paren-mode t)
+  (show-paren-delay 0)
   (show-paren-style 'parentheses))
 
 
@@ -1941,18 +1943,19 @@ no region is activated, this will operate on the entire buffer."
     "Font mapping to corresponding STHeiTi size.")
 
   (defun set-frame-font ()
-    (let ((font-size 14))
+    (let ((macos-font-size 14)
+          (linux-font-size 16))
       (cond
        ((equal system-type 'gnu/linux)
-        (set-face-attribute 'default nil :font (font-Hack font-size)))
+        (set-face-attribute 'default nil :font (font-Hack linux-font-size)))
        ((equal system-type 'darwin)
-        (set-face-attribute 'default nil :font (font-Menlo font-size))
+        (set-face-attribute 'default nil :font (font-Menlo macos-font-size))
         (dolist (charset '(han cjk-misc bopomofo))
           (set-fontset-font t charset (font-spec :family "STHeiTi")))
         (setq face-font-rescale-alist
               `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
                                              STHeiTi-size-map))
-                                 font-size))))
+                                 macos-font-size))))
         (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
         ;; `variable-pitch' face uses the same height as the `default'.
         ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
