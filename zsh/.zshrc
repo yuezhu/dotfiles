@@ -161,7 +161,7 @@ setopt LIST_ROWS_FIRST
 # insert the first match immediately.
 # This causes the current candidate to be selected and inserted immediately
 # without having to press TAB.
-# setopt MENU_COMPLETE
+setopt MENU_COMPLETE
 
 # Try to make the completion list smaller (occupying less lines) by printing
 # the matches in columns with different widths.
@@ -188,8 +188,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:default' list-prompt ''
 
 # Enable menu selection
-# Display a list of candidates for an ambiguous completion when hitting TAB,
-# and start menu selection when hitting TAB again.
+# Display a list of candidates for an ambiguous completion when hitting TAB
 zstyle ':completion:*' menu select
 
 # Matches in the same group are shown together
@@ -223,7 +222,7 @@ zstyle ':completion:*:match:*' original only
 
 # Increase the number of errors based on the length of the typed word
 # zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
-zstyle ':completion:*' max-errors 1
+zstyle ':completion:*' max-errors 2
 
 # Ignore shell functions that should not be used individually
 zstyle ':completion:*:functions' ignored-patterns '_*'
@@ -291,16 +290,18 @@ zstyle ':vcs_info:*' enable git
 add-zsh-hook precmd vcs_info
 
 # Minimal VCS information in prompt
-zstyle ':vcs_info:git:*' formats ' %B%F{cyan}%s:%b%%b%f'
-zstyle ':vcs_info:git:*' actionformats ' %B%F{cyan}%s:%b|%a%%b%f'
+# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html#Version-Control-Information
+zstyle ':vcs_info:git:*' formats ' %F{cyan}%b%f'
+zstyle ':vcs_info:git:*' actionformats ' %F{cyan}%b|%a%f'
 
-# https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/bira.zsh-theme
-PROMPT='%B%F{green}%m%f %F{blue}%~%f%F{cyan}${vcs_info_msg_0_}%f %(!.#.$)%b '
+# https://github.com/ohmyzsh/ohmyzsh/tree/master/themes
+# https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
+PROMPT='%B%F{green}%m%f %F{blue}%~%f${vcs_info_msg_0_} %#%b '
 #RPROMPT=' %B%D{%H:%M:%S.%.}%b'
 
 ## MISC
-# Report command running time if its user/system takes longer than 3 seconds
-REPORTTIME=3
+# Report command running time if its user/system takes longer than 10 seconds
+REPORTTIME=10
 
 # 16.2.6 Input/Output
 # Print the exit value of programs with non-zero exit status.
@@ -323,11 +324,11 @@ setopt INTERACTIVE_COMMENTS
 # https://wiki.archlinux.org/title/zsh#xterm_title
 # For expansion definition:
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
-function xterm_title_precmd () {
+function xterm_title {
   print -Pn -- '\e]2;%m: %~\a'
 }
 
-add-zsh-hook -Uz precmd xterm_title_precmd
+add-zsh-hook precmd xterm_title
 
 ## Use less as terminal pager
 export PAGER=less

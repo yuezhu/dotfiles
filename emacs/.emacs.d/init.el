@@ -1874,7 +1874,7 @@ no region is activated, this will operate on the entire buffer."
 (use-package color-theme-sanityinc-tomorrow
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-bright t)
+  (load-theme 'sanityinc-tomorrow-night t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
