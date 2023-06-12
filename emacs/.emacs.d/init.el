@@ -2,9 +2,6 @@
 
 (defconst emacs-start-time (current-time))
 
-(unless noninteractive
-  (message "Loading %s..." load-file-name))
-
 ;; No special file handling during Emacs startup (affecting startup time).
 (defvar file-name-handler-alist-tmp file-name-handler-alist)
 (setq file-name-handler-alist nil)
@@ -46,35 +43,59 @@
 (use-package emacs
   :defer t
   :custom
+  ;; nsterm.m
   (ns-alternate-modifier 'super)
   (ns-command-modifier 'meta)
-  (confirm-kill-emacs 'yes-or-no-p)
+
+  ;; fileio.c
   (delete-by-moving-to-trash t)
-  (directory-free-space-args "-Pkh")
+
+  ;; minibuffer.c
   (enable-recursive-minibuffers t)
+  (hisqtory-delete-duplicates t)
+
+  ;; buffer.c
   (fill-column 78)
+  (tab-width 4)
+
+  ;; frame.c
   (frame-resize-pixelwise t)
-  (history-delete-duplicates t)
-  (indent-tabs-mode nil)
+
+  ;; xdisp.c
+  (x-stretch-cursor t)
+  (message-log-max 16384)
+
+  ;; eval.c
+  (max-lisp-eval-depth 2000)
+  (max-specpdl-size 16384)
+
+  ;; terminal.c
+  (ring-bell-function 'ignore)
+
+  ;; undo.c
+  (undo-limit 1000000)
+
+  ;; fns.c
+  (use-dialog-box nil)
+  (use-file-dialog nil)
+  (use-short-answers t)
+
+  ;; files.el
+  (confirm-kill-emacs 'yes-or-no-p)
+  (directory-free-space-args "-Pkh")
+  (make-backup-files nil)
+  (mode-require-final-newline t)
+  (require-final-newline t)
+
+  ;; startup.el
   (inhibit-startup-screen t)
   (initial-major-mode 'fundamental-mode)
   (initial-scratch-message nil)
   (large-file-warning-threshold 50000000)
-  (make-backup-files nil)
-  (mark-ring-max 100)
-  (max-lisp-eval-depth 2000)
-  (max-specpdl-size 16384)
-  (message-log-max 16384)
-  (mode-require-final-newline t)
-  (require-final-newline t)
-  (ring-bell-function 'ignore)
+
+  ;; indent.el
   (tab-always-indent 'complete)
-  (tab-width 4)
-  (undo-limit 1000000)
-  (use-dialog-box nil)
-  (use-file-dialog nil)
-  (use-short-answers t)
-  (x-stretch-cursor t)
+
   :custom-face
   (aw-leading-char-face
    ((t (:inherit aw-leading-char-face :weight bold :height 3.0))))
@@ -220,7 +241,9 @@
   (size-indication-mode t)
   (line-number-mode t)
   (transient-mark-mode t)
-  (column-number-mode t))
+  (column-number-mode t)
+  (indent-tabs-mode nil)
+  (mark-ring-max 100))
 
 
 (use-package ns-win
@@ -1988,18 +2011,17 @@ no region is activated, this will operate on the entire buffer."
 (when (display-graphic-p) (unbind-key "C-z"))
 
 ;;
-;; Display elapsed time
-;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
+;; Display elapsed time and GC count
 ;;
-(let ((elapsed (float-time (time-subtract (current-time)
-                                          emacs-start-time))))
-  (message "Loading %s...done (%.3fs) (GC: %d)"
-           load-file-name elapsed gcs-done))
+;; https://github.com/jwiegley/dot-emacs/blob/master/init.org
+(defun report-time-since-load (&optional suffix)
+  (message "Loading init...done (%.3fs) (GC: %d)%s"
+           (float-time (time-subtract (current-time) emacs-start-time))
+           gcs-done
+           (or suffix "")))
 
 (add-hook 'after-init-hook
-          `(lambda ()
-             (let ((elapsed
-                    (float-time
-                     (time-subtract (current-time) emacs-start-time))))
-               (message "Loading %s...done (%.3fs) [after-init] (GC: %d)"
-                        ,load-file-name elapsed gcs-done))) t)
+          #'(lambda () (report-time-since-load " [after-init]"))
+          t)
+
+(report-time-since-load)
