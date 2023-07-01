@@ -1419,15 +1419,6 @@ mode line."
   (push `(enh-ruby-mode . ,hes-ruby-escape-sequence-keywords) hes-mode-alist))
 
 
-(use-package highlight-indent-guides
-  :ensure t
-  :defer t
-  :diminish
-  :init
-  (setq highlight-indent-guides-method 'character)
-  :hook ((yaml-mode json-mode) . highlight-indent-guides-mode))
-
-
 (use-package git-link
   :ensure t
   :defer t
