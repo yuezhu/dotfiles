@@ -2,14 +2,17 @@
 
 (defconst emacs-start-time (current-time))
 
-;; No special file handling during Emacs startup (affecting startup time).
-(defvar file-name-handler-alist-tmp file-name-handler-alist)
+;; Clear `file-name-handler-alist' during startup (affecting startup time).
+(defvar file-name-handler-alist-old file-name-handler-alist)
+
 (setq file-name-handler-alist nil)
+
 (add-hook 'after-init-hook
-          `(lambda ()
-             (setq file-name-handler-alist file-name-handler-alist-tmp)
-             (makunbound 'file-name-handler-alist-tmp)
-             (garbage-collect)) t)
+          #'(lambda ()
+              (setq file-name-handler-alist file-name-handler-alist-old)))
+
+;; Garbage collect at the end of startup
+(add-hook 'after-init-hook #'garbage-collect t)
 
 ;;
 ;; Initialize ELPA
@@ -62,8 +65,8 @@
   (frame-resize-pixelwise t)
 
   ;; xdisp.c
-  (x-stretch-cursor t)
   (message-log-max 16384)
+  (x-stretch-cursor t)
 
   ;; eval.c
   (max-lisp-eval-depth 2000)
@@ -197,12 +200,13 @@
 
 (use-package hl-line
   :defer t
-  :hook ((dired-mode
+  :hook ((compilation-mode
+          gnus-mode
+          ibuffer-mode
           magit-mode
           occur-mode
-          ibuffer-mode
-          compilation-mode
-          gnus-mode) . hl-line-mode))
+          dired-mode)
+         . hl-line-mode))
 
 
 (use-package goto-addr
@@ -224,26 +228,28 @@
 (use-package simple
   :defer t
   :diminish auto-fill-function
-  :hook ((org-mode
-          markdown-mode
+  :hook ((markdown-mode
           prog-mode
-          protobuf-mode) . turn-on-auto-fill)
-  :hook (((occur-mode
+          protobuf-mode
+          org-mode)
+         . turn-on-auto-fill)
+  :hook (((compilation-mode
            dired-mode
            speedbar-mode
-           compilation-mode) . (lambda () (visual-line-mode -1))))
+           occur-mode)
+          . (lambda () (visual-line-mode -1))))
   :custom
+  (column-number-mode t)
   (global-mark-ring-max 500)
+  (indent-tabs-mode nil)
   (kill-do-not-save-duplicates t)
   (kill-ring-max 1000000)
   (kill-whole-line nil)
+  (line-number-mode t)
+  (mark-ring-max 100)
   (next-line-add-newlines nil)
   (size-indication-mode t)
-  (line-number-mode t)
-  (transient-mark-mode t)
-  (column-number-mode t)
-  (indent-tabs-mode nil)
-  (mark-ring-max 100))
+  (transient-mark-mode t))
 
 
 (use-package ns-win
@@ -270,7 +276,6 @@
 (use-package autorevert
   :defer 2
   :custom
-  (auto-revert-verbose t)
   (global-auto-revert-non-file-buffers t)
   :config
   (global-auto-revert-mode t))
@@ -471,11 +476,7 @@
                 "Do not echo the message onto minibuffer when
 cleaning up `recentf-list'."
                 (let ((inhibit-message t))
-                  (apply func args))))
-
-  ;; 05/30/21 not needed
-  ;; (run-at-time t 300 #'recentf-maybe-save-list)
-  )
+                  (apply func args)))))
 
 
 (use-package whitespace
@@ -486,11 +487,11 @@ cleaning up `recentf-list'."
   :diminish (global-whitespace-mode
              whitespace-mode
              whitespace-newline-mode)
-  :hook ((makefile-mode
-          ssh-config-mode
-          conf-mode
+  :hook ((conf-mode
           json-mode
-          yaml-mode)
+          ssh-config-mode
+          yaml-mode
+          makefile-mode)
          . whitespace-mode)
   :custom
   (whitespace-line-column 100)
@@ -594,11 +595,11 @@ cleaning up `recentf-list'."
 (use-package diff-hl
   :ensure t
   :defer t
-  :hook ((prog-mode
-          conf-mode
-          text-mode
+  :hook ((conf-mode
           protobuf-mode
-          ssh-config-mode)
+          ssh-config-mode
+          text-mode
+          prog-mode)
          . diff-hl-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh)
@@ -1081,25 +1082,17 @@ mode line."
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 
-(use-package marginalia
-  :ensure t
-  :after vertico
-  :bind (:map minibuffer-local-map
-              ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode))
-
-
 (use-package consult
   :ensure t
   :after vertico
-  :bind (("C-c TAB"                  . consult-imenu)
-         ("C-x C-r"                  . consult-recent-file)
-         ("C-M-s"                    . consult-line)
-         ([remap yank-pop]           . consult-yank-replace)
-         ([remap goto-line]          . consult-goto-line)
-         ([remap projectile-ripgrep] . consult-ripgrep)
-         )
+  :bind (("C-c TAB" . consult-imenu)
+         ("C-x C-r" . consult-recent-file)
+         ("C-M-s"   . consult-line)
+         ("C-x b"   . consult-buffer)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x 5 b" . consult-buffer-other-frame)
+         ("M-y"     . consult-yank-replace)
+         ("M-g M-g" . consult-goto-line))
   :bind (:map isearch-mode-map
               ("M-o" . consult-line))
   :init
@@ -1117,7 +1110,9 @@ mode line."
                  args)))
 
   (with-eval-after-load 'projectile
-    (setq consult-project-root-function #'projectile-project-root))
+    (setq consult-project-root-function #'projectile-project-root)
+    (bind-key [remap projectile-switch-to-buffer] #'consult-project-buffer)
+    (bind-key [remap projectile-ripgrep]          #'consult-ripgrep))
 
   :config
   (require 'recentf)
@@ -1133,17 +1128,36 @@ mode line."
                      :preview-key "M-."))
 
 
-(use-package embark
-  :disabled ;; 2022-11-07 not used
+(use-package marginalia
   :ensure t
   :after vertico
-  :bind
-  (("C-." . embark-act)
-   ("C-;" . embark-dwim)
-   ("C-h B" . embark-bindings))
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
   :config
+  (marginalia-mode))
+
+
+(use-package embark
+  :ensure t
+  :after vertico
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+  ;; strategy, if you want to see the documentation from multiple providers.
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -1152,8 +1166,7 @@ mode line."
 
 
 (use-package embark-consult
-  :disabled ;; 2022-11-07 not used
-  :ensure t
+  :ensure t ; only need to install it, embark loads it after consult if found
   :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
@@ -1454,17 +1467,6 @@ mode line."
   (which-key-mode))
 
 
-(use-package persistent-scratch
-  :disabled ;; 12/18/19 it slows down Emacs startup
-  :ensure t
-  :demand t
-  :commands persistent-scratch-setup-default
-  :config
-  (persistent-scratch-autosave-mode)
-  (with-demoted-errors "Error: %S"
-    (persistent-scratch-setup-default)))
-
-
 (use-package unfill
   :ensure t
   :defer t
@@ -1644,11 +1646,6 @@ no region is activated, this will operate on the entire buffer."
   :defer t)
 
 
-(use-package rpm-spec-mode
-  :ensure t
-  :defer t)
-
-
 (use-package nxml-mode
   :defer t
   :hook
@@ -1707,12 +1704,6 @@ no region is activated, this will operate on the entire buffer."
   (enh-ruby-check-syntax nil))
 
 
-(use-package rspec-mode
-  :ensure t
-  :defer t
-  :diminish)
-
-
 (use-package lua-mode
   :ensure t
   :defer t
@@ -1755,12 +1746,6 @@ no region is activated, this will operate on the entire buffer."
   :after go-mode)
 
 
-(use-package vcl-mode
-  :ensure t
-  :mode "\\.vcl\\.erb\\'"
-  :defer t)
-
-
 (use-package vimrc-mode
   :ensure t
   :defer t)
@@ -1770,14 +1755,6 @@ no region is activated, this will operate on the entire buffer."
   :ensure t
   :magic ("\\[Unit\\]" . systemd-mode)
   :defer t)
-
-
-(use-package upstart-mode
-  :load-path "lisp/upstart-mode"
-  :pin manual
-  :commands upstart-mode
-  :defer t
-  :mode "\\.upstart\\'")
 
 
 (use-package yaml-mode
@@ -1888,7 +1865,7 @@ no region is activated, this will operate on the entire buffer."
 (use-package color-theme-sanityinc-tomorrow
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'sanityinc-tomorrow-bright t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
