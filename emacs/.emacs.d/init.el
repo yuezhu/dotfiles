@@ -14,11 +14,30 @@
 ;; Garbage collect at the end of startup
 (add-hook 'after-init-hook #'garbage-collect t)
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+
 ;;
 ;; Initialize ELPA
 ;;
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'init-elpa)
+(defconst package-must-use-elpa-packages '(org)
+  "Packages in this list must be from ELPA if present when checking
+installation status.")
+
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+
+(advice-add 'package-installed-p :around
+            (lambda (func &rest args)
+              (let ((pkg (car args)))
+                (if (memq pkg package-must-use-elpa-packages)
+                    (assq pkg package-alist)
+                  (apply func args)))))
+
+(package-initialize)
+
+(unless package-archive-contents
+  (package-refresh-contents))
 
 
 ;;
