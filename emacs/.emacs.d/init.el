@@ -139,6 +139,12 @@ installation status.")
   (mouse-wheel-progressive-speed nil))
 
 
+(use-package warnings
+  :defer t
+  :custom
+  (warning-minimum-level :error))
+
+
 (use-package window
   :defer t
   :custom
