@@ -20,6 +20,8 @@
 ;;
 ;; Initialize ELPA
 ;;
+(require 'package)
+
 (defconst package-must-use-elpa-packages '(org)
   "Packages in this list must be from ELPA if present when checking
 installation status.")
@@ -1899,13 +1901,6 @@ no region is activated, this will operate on the entire buffer."
 
 
 (when (display-graphic-p)
-  (defsubst display-name (&optional frame)
-    (pcase (sort (frame-monitor-attribute 'mm-size frame) '>)
-      ('(599 340) 'lg-ultrafine-27)
-      ('(596 335) 'dell-up2716d)
-      ('(330 206) 'macbook-pro-15)
-      ('(344 214) 'macbook-pro-16)))
-
   (defsubst font-Menlo (size)
     (format "-*-Menlo-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
             size))
@@ -1922,60 +1917,16 @@ no region is activated, this will operate on the entire buffer."
     (format "-*-Hack-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
             size))
 
-  (defconst STHeiTi-size-map
-    `((,(font-Menlo 12)  . 14.0)
-      (,(font-Menlo 13)  . 16.0)
-      (,(font-Menlo 14)  . 16.0)
-      (,(font-Menlo 15)  . 18.0)
-      (,(font-Menlo 16)  . 20.0)
-      (,(font-Menlo 17)  . 20.0)
-      (,(font-Menlo 18)  . 22.0)
-      (,(font-Menlo 19)  . 22.0)
-      (,(font-Menlo 20)  . 24.0)
-      (,(font-Menlo 21)  . 26.0)
-      (,(font-Menlo 22)  . 26.0)
-      (,(font-SFMono 12) . 12.0)
-      (,(font-SFMono 13) . 12.0)
-      (,(font-SFMono 14) . 14.0)
-      (,(font-SFMono 15) . 16.0)
-      (,(font-SFMono 16) . 16.0)
-      (,(font-SFMono 17) . 18.0)
-      (,(font-SFMono 18) . 18.0)
-      (,(font-SFMono 19) . 18.0)
-      (,(font-SFMono 20) . 20.0)
-      (,(font-SFMono 21) . 20.0)
-      (,(font-SFMono 22) . 20.0)
-      (,(font-Hack 12)   . 12.0)
-      (,(font-Hack 13)   . 12.0)
-      (,(font-Hack 14)   . 14.0)
-      (,(font-Hack 15)   . 16.0)
-      (,(font-Hack 16)   . 16.0)
-      (,(font-Hack 17)   . 18.0)
-      (,(font-Hack 18)   . 18.0)
-      (,(font-Hack 19)   . 18.0)
-      (,(font-Hack 20)   . 20.0)
-      (,(font-Hack 21)   . 20.0)
-      (,(font-Hack 22)   . 20.0))
-    "Font mapping to corresponding STHeiTi size.")
-
   (defun set-frame-font ()
     (let ((macos-font-size 14)
           (linux-font-size 16))
       (cond
        ((equal system-type 'gnu/linux)
-        (set-face-attribute 'default nil :font (font-Hack linux-font-size)))
+        (set-face-attribute 'default nil :font
+                            (font-Hack linux-font-size)))
        ((equal system-type 'darwin)
-        (set-face-attribute 'default nil :font (font-Menlo macos-font-size))
-        (dolist (charset '(han cjk-misc bopomofo))
-          (set-fontset-font t charset (font-spec :family "STHeiTi")))
-        (setq face-font-rescale-alist
-              `(("STHeiTi" . ,(/ (cdr (assoc (frame-parameter nil 'font)
-                                             STHeiTi-size-map))
-                                 macos-font-size))))
-        (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji"))
-        ;; `variable-pitch' face uses the same height as the `default'.
-        ;; https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/
-        (set-face-attribute 'variable-pitch nil :family "Palatino" :height 1.0)))))
+        (set-face-attribute 'default nil :font
+                            (font-Menlo macos-font-size))))))
 
   (add-hook 'after-init-hook
             #'(lambda ()
