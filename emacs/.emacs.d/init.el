@@ -426,6 +426,7 @@ installation status.")
 
 
 (use-package midnight
+  :disabled ;; 2023-07-31 not used
   :defer 2
   :config
   (midnight-mode))
