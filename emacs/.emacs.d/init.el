@@ -1181,7 +1181,7 @@ mode line."
 
   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
   ;; strategy, if you want to see the documentation from multiple providers.
-  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
@@ -1893,7 +1893,7 @@ no region is activated, this will operate on the entire buffer."
 (use-package color-theme-sanityinc-tomorrow
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-bright t)
+  (load-theme 'sanityinc-tomorrow-night t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
