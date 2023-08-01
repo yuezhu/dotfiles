@@ -849,15 +849,13 @@ followed by a space."
 
 
 (use-package eglot
-  :init
-  (setq eglot-workspace-configuration
-        '((:gopls . (:hoverKind "NoDocumentation"))))
-  :hook
-  ((go-mode
-    c-mode
-    c++-mode
-    python-mode)
-   . eglot-ensure)
+  ;; 2023-07-31 manually start
+  ;; :hook
+  ;; ((go-mode
+  ;;   c-mode
+  ;;   c++-mode
+  ;;   python-mode)
+  ;;  . eglot-ensure)
 
   :defer t
 
