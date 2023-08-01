@@ -576,7 +576,6 @@ cleaning up `recentf-list'."
                     (delete-window)))))
 
 
-;; Loaded by `projectile'
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer)
   :hook
@@ -850,8 +849,6 @@ followed by a space."
 
 
 (use-package eglot
-  :disabled
-  :ensure t
   :init
   (setq eglot-workspace-configuration
         '((:gopls . (:hoverKind "NoDocumentation"))))
@@ -861,8 +858,6 @@ followed by a space."
     c++-mode
     python-mode)
    . eglot-ensure)
-
-  (eglot-managed-mode . (lambda () (flymake-mode -1)))
 
   :defer t
 
@@ -885,126 +880,7 @@ followed by a space."
      :documentLinkProvider))
 
   :config
-  (add-to-list 'eglot-stay-out-of 'flymake-diagnostic-functions))
-
-
-;; https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
-(use-package lsp-mode
-  :disabled ;; 2022-11-05 temporarily not used.
-  :ensure t
-  ;; :init
-  ;; `lsp-mode' provides no option to complete disable the diagnostics. The
-  ;; `:disabled' is not a supported option, but can disable the diagnostics.
-  ;; 06/01/21 start using LSP diagnostics
-  ;; (setq lsp-diagnostics-provider :disabled)
-  :defer t
-  :hook
-  (go-mode
-   . (lambda ()
-       (unless (string-suffix-p "integration_test.go"
-                                (or buffer-file-name ""))
-         (lsp-deferred))))
-  ((
-    c-mode
-    ;; c++-mode
-    python-mode)
-   . lsp-deferred)
-
-  (lsp-mode . lsp-enable-which-key-integration)
-
-  :custom
-  (lsp-enable-dap-auto-configure nil)
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-folding nil)
-  (lsp-enable-indentation nil)
-  (lsp-enable-links nil)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-enable-text-document-color nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-keep-workspace-alive nil)
-  (lsp-lens-enable nil)
-  (lsp-modeline-code-actions-enable nil)
-  (lsp-modeline-diagnostics-enable nil)
-  (lsp-progress-function 'lsp-on-progress-legacy)
-  (lsp-signature-auto-activate nil)
-  (lsp-signature-render-documentation nil))
-
-
-(use-package ccls
-  :disabled ;; 04/25/21 slows down emacs when indexing ceph
-  :ensure t
-  :after (lsp-mode c-mode c++-mode)
-  :defer t)
-
-
-(use-package projectile
-  :ensure t
-  :defer 2
-  :preface
-  (defun projectile-set-env ()
-    "Set environment based on the current project."
-    (unless (file-remote-p default-directory)
-      (let ((proj-name (projectile-project-name))
-            (proj-root (projectile-project-root)))
-
-        (cond
-         ((string-prefix-p (expand-file-name "~/go") proj-root)
-          (setenv "GO111MODULE" "on")
-          (setenv "GOPATH" (expand-file-name "~/go"))
-          (setq-local projectile-project-type 'go)
-          (setq-local projectile-project-compilation-dir
-                      (file-name-directory (string-trim-left
-                                            (or buffer-file-name
-                                                default-directory)
-                                            (regexp-quote proj-root))))))
-
-        (message "Project: %s %s" proj-name proj-root))))
-
-  (defun projectile-promote-mode-line ()
-    "Show the project name right next to the major mode name in the
-mode line."
-    (let ((entry (assq 'projectile-mode minor-mode-alist)))
-      (if entry
-          (setq minor-mode-alist
-                (assq-delete-all (car entry) minor-mode-alist)))
-      (add-to-list 'minor-mode-alist entry)))
-
-  :bind-keymap ("C-c p" . projectile-command-map)
-
-  :commands (projectile-project-name
-             projectile-project-root
-             projectile-update-mode-line)
-
-  ;; If not calling `projectile-set-env' in the `find-file-hook', the
-  ;; `lsp-go-directory-filters' set in that function won't be picked up by
-  ;; `lsp-mode' for some reason.
-  :hook
-  (find-file . projectile-set-env)
-
-  :custom
-  (projectile-enable-caching t)
-  (projectile-file-exists-local-cache-expire 300)
-  (projectile-files-cache-expire 259200)
-  (projectile-find-dir-includes-top-level t)
-  (projectile-mode-line-prefix " ")
-  (projectile-sort-order 'recentf)
-  (projectile-switch-project-action 'projectile-dired)
-
-  :config
-  (let ((project (alist-get 'go projectile-project-types)))
-    (when project
-      (plist-put project 'test-command "go test -count=1 -race ./...")))
-
-  (advice-add 'projectile-update-mode-line :after
-              #'projectile-promote-mode-line)
-
-  (projectile-mode)
-
-  ;; Foribly update mode-line when loading. Without this, if `projectile'
-  ;; loading is deferred as specified by the `:defer', the projectile lighter
-  ;; on the mode-line cannot properly show the project name.
-  (projectile-update-mode-line))
+  (add-to-list 'eglot-stay-out-of 'flymake))
 
 
 (use-package yasnippet
@@ -1137,10 +1013,9 @@ mode line."
                    #'completion--in-region)
                  args)))
 
-  (with-eval-after-load 'projectile
-    (setq consult-project-root-function #'projectile-project-root)
-    (bind-key [remap projectile-switch-to-buffer] #'consult-project-buffer)
-    (bind-key [remap projectile-ripgrep]          #'consult-ripgrep))
+  (with-eval-after-load 'project
+    (bind-key [remap project-switch-to-buffer] #'consult-project-buffer)
+    (bind-key [remap project-find-regexp]      #'consult-ripgrep))
 
   :config
   (require 'recentf)
