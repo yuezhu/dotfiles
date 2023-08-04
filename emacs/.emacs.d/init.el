@@ -530,13 +530,10 @@ cleaning up `recentf-list'."
   :defer t
   :bind ("C-c i w" . ispell-word)
   :custom
-  (ispell-extra-args
-   '("--sug-mode=normal" "--ignore=2" "--run-together" "--camel-case"))
-  (ispell-local-dictionary
-   "en_US")
-  (ispell-personal-dictionary
-   "~/.emacs.d/ispell-personal-dictionary")
-  (ispell-silently-savep t))
+  (ispell-personal-dictionary "~/.emacs.d/ispell-personal-dictionary")
+  (ispell-silently-savep t)
+  (ispell-program-name "hunspell")
+  (ispell-local-dictionary "en_US"))
 
 
 (use-package flyspell
@@ -580,24 +577,22 @@ cleaning up `recentf-list'."
   :bind ("C-x C-b" . ibuffer)
   :hook
   (ibuffer-mode . ibuffer-auto-mode)
-  (ibuffer
-   . (lambda ()
-       (ibuffer-vc-set-filter-groups-by-vc-root)
-       (unless (eq ibuffer-sorting-mode 'filename/process)
-         (ibuffer-do-sort-by-filename/process))))
+  (ibuffer . (lambda ()
+               (ibuffer-vc-set-filter-groups-by-vc-root)
+               (unless (eq ibuffer-sorting-mode 'filename/process)
+                 (ibuffer-do-sort-by-filename/process))))
 
   :custom
   (ibuffer-filter-group-name-face 'font-lock-doc-face)
-  (ibuffer-formats
-   '((mark modified read-only vc-status-mini " "
-           (name 32 32 :left :elide)
-           " "
-           (size-h 9 -1 :right)
-           " "
-           (mode 16 16 :left :elide)
-           " "
-           (vc-status 16 -1 :left)
-           " " filename-and-process)))
+  (ibuffer-formats '((mark modified read-only vc-status-mini " "
+                           (name 32 32 :left :elide)
+                           " "
+                           (size-h 9 -1 :right)
+                           " "
+                           (mode 16 16 :left :elide)
+                           " "
+                           (vc-status 16 -1 :left)
+                           " " filename-and-process)))
 
   :config
   (define-ibuffer-column size-h
