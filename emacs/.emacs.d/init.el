@@ -461,21 +461,6 @@ installation status.")
                (substring dired-directory 0 last-idx)
              dired-directory)))))
 
-  (defun recentf-maybe-save-list ()
-    (defvar recentf-list-old nil)
-    (unless (equal recentf-list-old
-                   recentf-list)
-      (let ((inhibit-message t))
-        (recentf-save-list))
-      (setq recentf-list-old
-            (copy-sequence recentf-list))))
-
-  (defun recentf-remove-filename (filename)
-    "Remove FILENAME from the recent list."
-    (let ((m (recentf-string-member
-              (recentf-expand-file-name filename) recentf-list)))
-      (and m (setq recentf-list (delq (car m) recentf-list)))))
-
   :custom
   (recentf-auto-cleanup 60)
   (recentf-exclude
@@ -538,8 +523,8 @@ cleaning up `recentf-list'."
 
 (use-package flyspell
   :bind ("C-c i b" . flyspell-buffer)
-  ;; :hook
-  ;; (text-mode . flyspell-mode)
+  :hook
+  (text-mode . flyspell-mode)
   :custom
   (flyspell-sort-corrections t)
   :config
@@ -1565,13 +1550,6 @@ no region is activated, this will operate on the entire buffer."
 
   :config
   (require 'sgml-mode))
-
-
-(use-package applescript-mode
-  :ensure t
-  :defer t
-  :bind (:map as-mode-map
-              ("<tab>" . tab-to-tab-stop)))
 
 
 (use-package js
