@@ -513,11 +513,14 @@ cleaning up `recentf-list'."
 
 (use-package ispell
   :defer t
-  :bind ("C-c i w" . ispell-word)
+  ;; 2023-08-12 use `flyspell-correct'
+  ;;  :bind ("C-c i w" . ispell-word)
   :custom
+  (ispell-program-name "hunspell")
   (ispell-personal-dictionary "~/.emacs.d/ispell-personal-dictionary")
   (ispell-silently-savep t)
-  (ispell-program-name "hunspell")
+  (ispell-local-dictionary-alist
+   '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
   (ispell-local-dictionary "en_US"))
 
 
@@ -543,7 +546,7 @@ cleaning up `recentf-list'."
   :ensure t
   :after flyspell
   :bind (:map flyspell-mode-map
-              ("C-c i c" . flyspell-correct-wrapper)))
+              ("C-c i w" . flyspell-correct-wrapper)))
 
 
 (use-package info
