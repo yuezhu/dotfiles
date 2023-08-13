@@ -22,9 +22,9 @@
 ;;
 (require 'package)
 
-(defconst package-must-use-elpa-packages '(org)
-  "Packages in this list must be from ELPA if present when checking
-installation status.")
+(defconst package-must-use-elpa-packages
+  '(org flymake eglot)
+  "A list of packages that must be installed from ELPA.")
 
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
@@ -368,14 +368,6 @@ installation status.")
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 
 
-(use-package gnutls
-  :defer t
-  :custom
-  (gnutls-algorithm-priority "SECURE192:+SECURE128:-VERS-ALL:+VERS-TLS1.2")
-  (gnutls-min-prime-bits 4096)
-  (gnutls-verify-error t))
-
-
 (use-package ialign
   :ensure t
   :bind ("C-c |" . ialign)
@@ -468,7 +460,7 @@ installation status.")
      "\\.log\\'"
      "\\.el\\.gz\\'"
      "/\\.emacs\\.d/elpa/.*-\\(autoloads\\|pkg\\)\\.el\\'"
-     "/\\.emacs\\.d/\\(auto-save-list\\|elfeed\\|package-upgrade-check-epoch\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)"
+     "/\\.emacs\\.d/\\(auto-save-list\\|projects\\|recentf\\|snippets\\|tramp\\|var\\)"
      "/\\.git/COMMIT_EDITMSG\\'"))
   (recentf-filename-handlers '(abbreviate-file-name))
   (recentf-max-saved-items 2000)
@@ -559,6 +551,45 @@ cleaning up `recentf-list'."
                 "When quitting `info', remove its window."
                 (if (> (length (window-list)) 1)
                     (delete-window)))))
+
+
+(use-package flymake
+  :ensure t
+  :defer t
+  :hook
+  (prog-mode . flymake-mode))
+
+
+(use-package flycheck
+  :disabled ;; 2023-08-12 use `flymake'
+  :defer 2
+  :custom
+  (flycheck-disabled-checkers
+   '(c/c++-cppcheck
+     c/c++-gcc
+     go-build
+     go-errcheck
+     go-gofmt
+     go-golint
+     go-staticcheck
+     go-test
+     go-unconvert
+     go-vet
+     json-jsonlint
+     json-python-json
+     python-mypy
+     python-pycompile
+     python-pyright
+     ruby-rubocop
+     sh-bash
+     sh-posix-bash
+     sh-posix-dash
+     sh-zsh
+     yaml-jsyaml
+     yaml-ruby
+     emacs-lisp-checkdoc))
+  :config
+  (global-flycheck-mode 1))
 
 
 (use-package ibuffer
@@ -756,36 +787,39 @@ functions, eg., `try-expand-all-abbrevs'"
   (dired-mode . dired-omit-mode))
 
 
-(use-package flycheck
+(use-package eglot
   :ensure t
-  :defer 2
+  ;; 2023-07-31 manually start
+  ;; :hook
+  ;; ((go-mode
+  ;;   c-mode
+  ;;   c++-mode
+  ;;   python-mode)
+  ;;  . eglot-ensure)
+
+  :defer t
+
+  :bind (:map eglot-mode-map
+              ("C-c l d" . eglot-find-declaration)
+              ("C-c l t" . eglot-find-typeDefinition)
+              ("C-c l i" . eglot-find-implementation)
+              ("C-c l r" . eglot-rename))
+
   :custom
-  (flycheck-disabled-checkers
-   '(c/c++-cppcheck
-     c/c++-gcc
-     go-build
-     go-errcheck
-     go-gofmt
-     go-golint
-     go-staticcheck
-     go-test
-     go-unconvert
-     go-vet
-     json-jsonlint
-     json-python-json
-     python-mypy
-     python-pycompile
-     python-pyright
-     ruby-rubocop
-     sh-bash
-     sh-posix-bash
-     sh-posix-dash
-     sh-zsh
-     yaml-jsyaml
-     yaml-ruby
-     emacs-lisp-checkdoc))
-  :config
-  (global-flycheck-mode 1))
+  (eglot-autoshutdown t)
+  (eglot-events-buffer-size 0)
+  (eglot-ignored-server-capabilites
+   '(:documentHighlightProvider
+     :codeActionProvider
+     :codeLensProvider
+     :documentFormattingProvider
+     :documentRangeFormattingProvider
+     :documentOnTypeFormattingProvider
+     :documentLinkProvider))
+
+  ;; :config
+  ;; (add-to-list 'eglot-stay-out-of 'flymake)
+  )
 
 
 (use-package company
@@ -829,39 +863,6 @@ followed by a space."
   :defer 2
   :config
   (company-quickhelp-mode 1))
-
-
-(use-package eglot
-  ;; 2023-07-31 manually start
-  ;; :hook
-  ;; ((go-mode
-  ;;   c-mode
-  ;;   c++-mode
-  ;;   python-mode)
-  ;;  . eglot-ensure)
-
-  :defer t
-
-  :bind (:map eglot-mode-map
-              ("C-c l d" . eglot-find-declaration)
-              ("C-c l t" . eglot-find-typeDefinition)
-              ("C-c l i" . eglot-find-implementation)
-              ("C-c l r" . eglot-rename))
-
-  :custom
-  (eglot-autoshutdown t)
-  (eglot-events-buffer-size 0)
-  (eglot-ignored-server-capabilites
-   '(:documentHighlightProvider
-     :codeActionProvider
-     :codeLensProvider
-     :documentFormattingProvider
-     :documentRangeFormattingProvider
-     :documentOnTypeFormattingProvider
-     :documentLinkProvider))
-
-  :config
-  (add-to-list 'eglot-stay-out-of 'flymake))
 
 
 (use-package yasnippet
@@ -1145,7 +1146,7 @@ followed by a space."
   :defer t
   :hook (term-mode
          . (lambda ()
-             (setq term-prompt-regexp "^[^#$]+[#$] ")
+             (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
              (setq-local transient-mark-mode nil)
              (auto-fill-mode -1))))
 
