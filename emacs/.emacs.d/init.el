@@ -512,8 +512,14 @@ cleaning up `recentf-list'."
   (ispell-personal-dictionary "~/.emacs.d/ispell-personal-dictionary")
   (ispell-silently-savep t)
   (ispell-local-dictionary-alist
-   '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-  (ispell-local-dictionary "en_US"))
+   '(("en_US"
+      "[[:alpha:]]" "[^[:alpha:]]" "[']" nil
+      ("-d" "en_US") nil utf-8)))
+  (ispell-local-dictionary "en_US")
+  :config
+  ;; Hunspell cannot create the personal dictionary file if it does not exist.
+  (unless (file-exists-p ispell-personal-dictionary)
+    (make-empty-file ispell-personal-dictionary)))
 
 
 (use-package flyspell
@@ -1225,7 +1231,7 @@ followed by a space."
   :hook
   (org-mode
    . (lambda ()
-       (org-indent-mode 1)
+       ;; (org-indent-mode 1)
        (setq-local fill-column 120)))
   :custom
   (org-catch-invisible-edits t)
@@ -1234,7 +1240,6 @@ followed by a space."
   (org-export-with-section-numbers nil)
   (org-export-with-sub-superscripts '{})
   (org-export-with-toc nil)
-  (org-hide-leading-stars t)
   (org-html-extension "html")
   (org-html-htmlize-output-type 'inline-css)
   (org-image-actual-width nil)
@@ -1254,9 +1259,32 @@ followed by a space."
   :after org)
 
 
+(use-package org-roam
+  :ensure t
+  :defer t
+  :custom
+  (org-roam-directory (file-truename "~/org-roam"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory))
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode))
+
+
+;; This is needed for `org-mode' to fontify code blocks.
 (use-package htmlize
   :ensure t
-  :defer t)
+  :defer t
+  :after org)
 
 
 (use-package markdown-mode
