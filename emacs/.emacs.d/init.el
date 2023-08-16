@@ -886,6 +886,7 @@ followed by a space."
 
 (use-package yasnippet-snippets
   :ensure t
+  :defer t
   :after yasnippet)
 
 
