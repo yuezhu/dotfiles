@@ -1231,7 +1231,7 @@ followed by a space."
   :hook
   (org-mode
    . (lambda ()
-       ;; (org-indent-mode 1)
+       (org-indent-mode 1)
        (setq-local fill-column 120)))
   :custom
   (org-catch-invisible-edits t)
