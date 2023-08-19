@@ -547,18 +547,6 @@ cleaning up `recentf-list'."
               ("C-c i w" . flyspell-correct-wrapper)))
 
 
-(use-package info
-  ;; :init
-  ;; (remove-hook 'menu-bar-update-hook 'mac-setup-help-topics)
-  :defer t ;; Does not work. It is loaded somewhere else.
-  :config
-  (advice-add 'Info-exit :after
-              (lambda ()
-                "When quitting `info', remove its window."
-                (if (> (length (window-list)) 1)
-                    (delete-window)))))
-
-
 (use-package flymake
   :ensure t
   :defer t
@@ -985,7 +973,10 @@ followed by a space."
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
          ("M-y"     . consult-yank-replace)
-         ("M-g M-g" . consult-goto-line))
+         ("M-g f"   . consult-flymake)
+         ("M-g M-g" . consult-goto-line)
+         ("C-x p b" . consult-project-buffer)
+         ("C-x p g" . consult-ripgrep))
   :bind (:map isearch-mode-map
               ("M-o" . consult-line))
   :init
@@ -1002,11 +993,8 @@ followed by a space."
                    #'completion--in-region)
                  args)))
 
-  (with-eval-after-load 'project
-    (bind-key [remap project-switch-to-buffer] #'consult-project-buffer)
-    (bind-key [remap project-find-regexp]      #'consult-ripgrep))
-
   :config
+  ;; Explicitly require `recentf' in order to use `consult-recent-file'.
   (require 'recentf)
   (consult-customize consult-ripgrep
                      consult-git-grep
@@ -1014,9 +1002,10 @@ followed by a space."
                      consult-bookmark
                      consult-recent-file
                      consult-xref
+                     consult--source-bookmark
+                     consult--source-file-register
                      consult--source-recent-file
                      consult--source-project-recent-file
-                     consult--source-bookmark
                      :preview-key "M-."))
 
 
@@ -1770,6 +1759,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-night t)
