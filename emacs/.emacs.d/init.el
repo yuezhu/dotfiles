@@ -73,7 +73,7 @@
   (ns-command-modifier 'meta)
 
   ;; src/frame.c
-  ;; (menu-bar-mode nil)
+  (menu-bar-mode (equal system-type 'darwin))
   (tool-bar-mode nil)
 
   ;; src/xdisp.c
