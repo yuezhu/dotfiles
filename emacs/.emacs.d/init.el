@@ -668,6 +668,11 @@ cleaning up `recentf-list'."
                  (window-height . 0.5))))
 
 
+(use-package wgrep
+  :ensure t
+  :defer t)
+
+
 (use-package dumb-jump
   :ensure t
   :defer t
@@ -966,19 +971,28 @@ followed by a space."
 (use-package consult
   :ensure t
   :after vertico
-  :bind (("C-c TAB" . consult-imenu)
-         ("C-x C-r" . consult-recent-file)
-         ("C-M-s"   . consult-line)
+
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c TAB" . consult-imenu)
+         ([remap Info-search] . consult-info)
+
+         ;; C-x bindings in `ctl-x-map'
          ("C-x b"   . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
-         ("M-y"     . consult-yank-replace)
-         ("M-g f"   . consult-flymake)
-         ("M-g M-g" . consult-goto-line)
+         ("C-x C-r" . consult-recent-file)
          ("C-x p b" . consult-project-buffer)
-         ("C-x p g" . consult-ripgrep))
+         ("C-x p g" . consult-ripgrep)
+
+         ;; Other override bindings
+         ("C-M-s"   . consult-line)
+         ("M-y"     . consult-yank-replace)
+         ("M-g M-g" . consult-goto-line))
+
   :bind (:map isearch-mode-map
               ("M-o" . consult-line))
+
   :init
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
@@ -1759,10 +1773,9 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'sanityinc-tomorrow-bright t)
   ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :slant 'normal)
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
