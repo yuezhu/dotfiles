@@ -659,7 +659,7 @@ cleaning up `recentf-list'."
 (use-package rg
   :ensure t
   :defer t
-  :bind ("C-c s" . rg-menu)
+  :bind ("C-c r" . rg-menu)
   :config
   (add-to-list 'display-buffer-alist
                '("\\`\\*rg\\*\\'"
