@@ -23,8 +23,8 @@
 (require 'package)
 
 (defconst package-must-use-elpa-packages
-  '(org flymake eglot)
-  "A list of packages that must be installed from ELPA.")
+  '(org eldoc flymake eglot)
+  "A list of packages that must use the ELPA versions.")
 
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
@@ -323,6 +323,7 @@
 
 
 (use-package eldoc
+  :ensure t
   ;; Loaded by something else; defer 2 doesn't work.
   :defer 2
   :diminish
