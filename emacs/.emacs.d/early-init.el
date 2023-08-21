@@ -1,13 +1,7 @@
-;;   -*- lexical-binding: t; -*-
+;; -*- lexical-binding: t; -*-
 
-(setq gc-cons-threshold 50000000)
-(setq read-process-output-max 4194304)
-(setq load-prefer-newer t)
-
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(setq frame-title-format
-      '((:eval (or buffer-file-name (buffer-name)))
-        (:eval (if (buffer-modified-p) " * " " - "))
-        "GNU Emacs " emacs-version " - " system-name))
+;; Set the garbage collector threshold, to avoid collections
+;; To avoid collections while loading the `init.el', they must be set using
+;; the `early-init.el'.
+(setq gc-cons-percentage 0.5
+      gc-cons-threshold (* 128 1024 1024))

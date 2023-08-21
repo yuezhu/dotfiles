@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+;; Used to report time spent loading this module
 (defconst emacs-start-time (current-time))
 
 ;; Clear `file-name-handler-alist' during startup (affecting startup time).
@@ -71,6 +72,22 @@
   (ns-alternate-modifier 'super)
   (ns-command-modifier 'meta)
 
+  ;; src/frame.c
+  ;; (menu-bar-mode nil)
+  (tool-bar-mode nil)
+
+  ;; src/xdisp.c
+  (frame-title-format
+   '((:eval (or buffer-file-name (buffer-name)))
+     (:eval (if (buffer-modified-p) " * " " - "))
+     "GNU Emacs " emacs-version " - " system-name))
+
+  ;; src/lread.c
+  (load-prefer-newer t)
+
+  ;; src/process.c
+  (read-process-output-max (* 1024 1024))
+
   ;; fileio.c
   (delete-by-moving-to-trash t)
 
@@ -126,6 +143,12 @@
   :init
   (add-hook 'after-save-hook
             #'executable-make-buffer-file-executable-if-script-p))
+
+
+(use-package scroll-bar
+  :defer t
+  :custom
+  (scroll-bar-mode nil))
 
 
 (use-package mouse
