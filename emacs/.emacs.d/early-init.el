@@ -5,3 +5,6 @@
 ;; the `early-init.el'.
 (setq gc-cons-percentage 0.5
       gc-cons-threshold (* 128 1024 1024))
+
+;; Disable native compilation
+(setq native-comp-jit-compilation nil)
