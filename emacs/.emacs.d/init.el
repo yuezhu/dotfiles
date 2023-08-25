@@ -81,6 +81,7 @@
   (tool-bar-mode nil)
 
   ;; src/xdisp.c
+  (max-mini-window-height 0.5)
   (frame-title-format
    '((:eval (or buffer-file-name (buffer-name)))
      (:eval (if (buffer-modified-p) " * " " - "))
