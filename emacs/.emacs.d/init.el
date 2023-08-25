@@ -42,6 +42,10 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+(advice-add 'package-upgrade-all :around
+            (lambda (func &rest args)
+              "Upgrade all packages without asking."
+              (funcall func)))
 
 ;;
 ;; Initialize use-package
@@ -352,6 +356,9 @@
   :diminish
   :hook
   (prog-mode . global-eldoc-mode)
+  :custom
+  ;; Show all the results eagerly
+  (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :config
   (global-eldoc-mode t))
 
@@ -502,8 +509,8 @@
 
   (advice-add 'recentf-cleanup :around
               (lambda (func &rest args)
-                "Do not echo the message onto minibuffer when
-cleaning up `recentf-list'."
+                "Do not echo the message onto minibuffer when cleaning up
+`recentf-list'."
                 (let ((inhibit-message t))
                   (apply func args)))))
 
@@ -556,7 +563,7 @@ cleaning up `recentf-list'."
   ;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-flyspell.el
   (defun flyspell-ignore-http-and-https ()
     "Function used for `flyspell-generic-check-word-predicate' to
-    ignore stuff starting with \"http\" or \"https\"."
+ignore stuff starting with \"http\" or \"https\"."
     (save-excursion
       (forward-whitespace -1)
       (not (looking-at "[\t ]+https?\\b"))))
@@ -712,9 +719,9 @@ cleaning up `recentf-list'."
   :config
   (advice-add 'hippie-expand :around
               (lambda (func &rest args)
-                "Make `hippie-expand' do case-sensitive
-expanding. Though not all, this is effective with some expand
-functions, eg., `try-expand-all-abbrevs'"
+                "Make `hippie-expand' do case-sensitive expanding. Though not all,
+this is effective with some expand functions, eg.,
+`try-expand-all-abbrevs'"
                 (let ((case-fold-search nil))
                   (apply func args)))))
 
@@ -854,9 +861,8 @@ functions, eg., `try-expand-all-abbrevs'"
               ("C-p" . company-select-previous-or-abort)
               ("C-n" . company-select-next-or-abort)
               (" "   . (lambda ()
-                         "When completion is active, entering a
-space aborts the completion, and inserts whatever we have
-followed by a space."
+                         "When completion is active, entering a space aborts the
+completion, and inserts whatever we have followed by a space."
                          (interactive)
                          (company-abort)
                          (self-insert-command 1))))
@@ -953,11 +959,7 @@ followed by a space."
 
 (use-package crux
   :ensure t
-  :defer t
-  :bind (("C-c c t" . crux-transpose-windows)
-         ("C-c c i" . crux-find-user-init-file)
-         ("C-c c r" . crux-rename-file-and-buffer)
-         ("C-c c d" . crux-delete-file-and-buffer)))
+  :defer t)
 
 
 ;; Prevent cursor from moving onto the minibuffer prompt
@@ -1256,6 +1258,8 @@ followed by a space."
   :ensure t
   :defer t
   :pin gnu
+  :bind (("C-c c" . org-capture)
+         ("C-c l" . org-store-link))
   :hook
   (org-mode
    . (lambda ()
@@ -1273,7 +1277,13 @@ followed by a space."
   (org-image-actual-width nil)
   (org-log-done 'time)
   (org-src-fontify-natively t)
-  (org-startup-folded "nofold"))
+  (org-startup-folded "nofold")
+  (org-default-notes-file "~/org/notes.org")
+  :config
+  (let ((org-notes-directory
+         (file-name-directory (file-truename org-default-notes-file))))
+    (unless (file-directory-p org-notes-directory)
+      (make-directory org-notes-directory))))
 
 
 (use-package org-make-toc
@@ -1289,6 +1299,7 @@ followed by a space."
 
 (use-package org-roam
   :ensure t
+  :after org
   :defer t
   :custom
   (org-roam-directory (file-truename "~/org-roam"))
