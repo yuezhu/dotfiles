@@ -1816,7 +1816,8 @@ no region is activated, this will operate on the entire buffer."
   ;; (set-face-attribute 'font-lock-comment-face nil :slant 'normal)
   ;; (unless (display-graphic-p)
   ;;   (set-face-attribute 'default nil :background "unspecified-bg"))
-  )
+  :custom
+  (custom-safe-themes t))
 
 
 (when (display-graphic-p)
