@@ -72,7 +72,7 @@
 (use-package emacs
   :defer t
   :custom
-  ;; nsterm.m
+  ;; src/nsterm.m
   (ns-alternate-modifier 'super)
   (ns-command-modifier 'meta)
 
@@ -81,11 +81,12 @@
   (tool-bar-mode nil)
 
   ;; src/xdisp.c
-  (max-mini-window-height 0.5)
   (frame-title-format
    '((:eval (or buffer-file-name (buffer-name)))
      (:eval (if (buffer-modified-p) " * " " - "))
      "GNU Emacs " emacs-version " - " system-name))
+  (max-mini-window-height 0.5)
+  (redisplay-skip-fontification-on-input t)
 
   ;; src/lread.c
   (load-prefer-newer t)
@@ -93,36 +94,39 @@
   ;; src/process.c
   (read-process-output-max (* 1024 1024))
 
-  ;; fileio.c
+  ;; src/font.c
+  (inhibit-compacting-font-caches t)
+
+  ;; src/fileio.c
   (delete-by-moving-to-trash t)
 
-  ;; minibuffer.c
+  ;; src/minibuffer.c
   (enable-recursive-minibuffers t)
   (hisqtory-delete-duplicates t)
 
-  ;; buffer.c
+  ;; src/buffer.c
   (fill-column 78)
   (tab-width 4)
 
-  ;; frame.c
+  ;; src/frame.c
   (frame-resize-pixelwise t)
   (frame-inhibit-implied-resize t)
 
-  ;; xdisp.c
+  ;; src/xdisp.c
   (message-log-max 16384)
   (x-stretch-cursor t)
 
-  ;; eval.c
+  ;; src/eval.c
   (max-lisp-eval-depth 2000)
   (max-specpdl-size 16384)
 
-  ;; terminal.c
+  ;; src/terminal.c
   (ring-bell-function 'ignore)
 
-  ;; undo.c
+  ;; src/undo.c
   (undo-limit 1000000)
 
-  ;; fns.c
+  ;; src/fns.c
   (use-dialog-box nil)
   (use-file-dialog nil)
   (use-short-answers t)
