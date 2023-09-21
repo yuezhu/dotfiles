@@ -1300,7 +1300,6 @@ completion, and inserts whatever we have followed by a space."
 
 (use-package org-roam
   :ensure t
-  :after org
   :defer t
   :custom
   (org-roam-directory (file-truename "~/org-roam"))
