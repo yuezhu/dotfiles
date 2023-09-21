@@ -1284,7 +1284,13 @@ completion, and inserts whatever we have followed by a space."
   (let ((org-notes-directory
          (file-name-directory (file-truename org-default-notes-file))))
     (unless (file-directory-p org-notes-directory)
-      (make-directory org-notes-directory))))
+      (make-directory org-notes-directory)))
+  
+  (add-to-list 'display-buffer-alist
+               '("\\`\\(\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t)
+                 (window-height . 0.5))))
 
 
 (use-package org-make-toc
