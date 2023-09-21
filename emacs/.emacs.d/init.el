@@ -1292,7 +1292,7 @@ completion, and inserts whatever we have followed by a space."
       (make-directory org-notes-directory)))
   
   (add-to-list 'display-buffer-alist
-               '("\\`\\(\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
+               '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
                  (display-buffer-at-bottom)
                  (inhibit-same-window . t)
                  (window-height . 0.5))))
