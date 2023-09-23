@@ -1206,58 +1206,26 @@ completion, and inserts whatever we have followed by a space."
   :diminish)
 
 
+;; https://github.com/jwiegley/dot-emacs/blob/master/init.org#ps-print
 (use-package ps-print
   :defer t
-  :preface
-  (defun ps-print-to-file (file-name)
-    "Prints the buffer to PostScript file"
-    (interactive
-     (list (read-string "PostScript File: "
-                        (expand-file-name
-                         (format "%s.ps"
-                                 (file-name-nondirectory (buffer-name)))
-                         default-directory))))
-    (ps-spool-buffer-with-faces)
-    (with-current-buffer ps-spool-buffer-name
-      (write-file file-name t)
-      (kill-buffer)))
-
-  :commands (ps-print-buffer
-             ps-print-buffer-with-faces
-             ps-print-region
-             ps-print-region-with-faces
-             ps-spool-buffer
-             ps-spool-buffer-with-faces
-             ps-spool-region
-             ps-spool-region-with-faces)
-
   :custom
-  (ps-bottom-margin 19.84251968503937)
-  (ps-font-family 'Courier)
-  (ps-font-size 6.0)
-  (ps-header-font-family 'Courier)
-  (ps-header-font-size 8.0)
-  (ps-header-line-pad 0.25)
-  (ps-header-lines 1)
-  (ps-header-offset 14.173228346456693)
-  (ps-header-title-font-size 8.0)
-  (ps-inter-column 19.84251968503937)
-  (ps-landscape-mode t)
-  (ps-left-margin 19.84251968503937)
-  (ps-lpr-switches '("-o sides=two-sided-short-edge"))
-  (ps-number-of-columns 2)
-  (ps-paper-type 'letter)
-  (ps-print-color-p 'black-white)
-  (ps-print-footer nil)
-  (ps-print-header t)
-  (ps-print-header-frame t)
-  (ps-printer-name "HP LaserJet Professional P 1102w")
-  (ps-printer-name-option "-P")
-  (ps-right-margin 19.84251968503937)
-  (ps-show-n-of-n t)
-  (ps-spool-duplex t)
-  (ps-top-margin 19.84251968503937)
-  (ps-warn-paper-type t))
+  (ps-font-size '(8 . 10))
+  (ps-footer-font-size '(12 . 14))
+  (ps-header-font-size '(12 . 14))
+  (ps-header-title-font-size '(14 . 16))
+  (ps-line-number-font-size 10)
+  (ps-print-color-p nil)
+  :preface
+  (defun ps-spool-to-pdf (beg end &rest _ignore)
+    (interactive "r")
+    (let ((temp-file (expand-file-name
+                      (concat "~/" (make-temp-name "ps2pdf") ".pdf"))))
+      (call-process-region beg end (executable-find "ps2pdf")
+                           nil nil nil "-" temp-file)
+      (call-process (executable-find "open") nil nil nil temp-file)))
+  :config
+  (setq ps-print-region-function 'ps-spool-to-pdf))
 
 
 (use-package org
@@ -1266,11 +1234,13 @@ completion, and inserts whatever we have followed by a space."
   :pin gnu
   :bind (("C-c c" . org-capture)
          ("C-c l" . org-store-link))
+
   :hook
   (org-mode
    . (lambda ()
        (org-indent-mode 1)
        (setq-local fill-column 120)))
+
   :custom
   (org-catch-invisible-edits t)
   (org-export-default-language "en")
@@ -1285,12 +1255,13 @@ completion, and inserts whatever we have followed by a space."
   (org-src-fontify-natively t)
   (org-startup-folded "nofold")
   (org-default-notes-file "~/org/notes.org")
+
   :config
   (let ((org-notes-directory
          (file-name-directory (file-truename org-default-notes-file))))
     (unless (file-directory-p org-notes-directory)
       (make-directory org-notes-directory)))
-  
+
   (add-to-list 'display-buffer-alist
                '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
                  (display-buffer-at-bottom)
@@ -1314,6 +1285,7 @@ completion, and inserts whatever we have followed by a space."
   :defer t
   :custom
   (org-roam-directory (file-truename "~/org-roam"))
+
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
@@ -1321,6 +1293,7 @@ completion, and inserts whatever we have followed by a space."
          ("C-c n c" . org-roam-capture)
          ;; Dailies
          ("C-c n j" . org-roam-dailies-capture-today))
+
   :config
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory))
