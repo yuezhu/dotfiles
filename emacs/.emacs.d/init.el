@@ -380,22 +380,15 @@
 
 
 (use-package electric
-  ;; Loaded by something else; defer 2 doesn't work.
-  :defer 2
   :hook
-  (prog-mode . electric-indent-mode)
-  :config
-  (electric-indent-mode t))
+  (after-init . electric-indent-mode))
 
 
 (use-package elec-pair
-  :defer 2
   :custom
   (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
   :hook
-  (prog-mode . electric-pair-mode)
-  :config
-  (electric-pair-mode t))
+  (after-init . electric-pair-mode))
 
 
 (use-package ediff-wind
@@ -1239,7 +1232,15 @@ completion, and inserts whatever we have followed by a space."
   (org-mode
    . (lambda ()
        (org-indent-mode 1)
-       (setq-local fill-column 120)))
+       (setq-local fill-column 120)
+       (setq-local electric-pair-pairs
+                   (append electric-pair-pairs '((?/ . ?/)
+                                                 (?= . ?=)
+                                                 (?* . ?*)
+                                                 (?+ . ?+)
+                                                 (?_ . ?_)
+                                                 (?~ . ?~))))
+       (setq-local electric-pair-text-pairs electric-pair-pairs)))
 
   :custom
   (org-catch-invisible-edits t)
@@ -1262,11 +1263,12 @@ completion, and inserts whatever we have followed by a space."
     (unless (file-directory-p org-notes-directory)
       (make-directory org-notes-directory)))
 
-  (add-to-list 'display-buffer-alist
-               '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
-                 (display-buffer-at-bottom)
-                 (inhibit-same-window . t)
-                 (window-height . 0.5))))
+  ;; (add-to-list 'display-buffer-alist
+  ;;              '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
+  ;;                (display-buffer-at-bottom)
+  ;;                (inhibit-same-window . t)
+  ;;                (window-height . 0.5)))
+  )
 
 
 (use-package org-make-toc
