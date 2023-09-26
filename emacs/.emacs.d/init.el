@@ -852,6 +852,7 @@ this is effective with some expand functions, eg.,
 
 
 (use-package company
+  :disabled
   :ensure t
   ;; 2022-11-06 enable lighter because it shows the backend used for
   ;; the current completion.
@@ -944,11 +945,11 @@ completion, and inserts whatever we have followed by a space."
   :commands (imenu-add-menubar-index
              imenu--menubar-select)
 
-  :hook
-  ((emacs-lisp-mode
-    go-mode
-    markdown-mode)
-   . imenu-add-menubar-index)
+  :hook ((emacs-lisp-mode
+          go-mode
+          org-mode
+          markdown-mode)
+         . imenu-add-menubar-index)
 
   :custom
   (imenu-auto-rescan t)
@@ -971,6 +972,13 @@ completion, and inserts whatever we have followed by a space."
   (minibuffer-setup . cursor-intangible-mode))
 
 
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+
 (use-package vertico
   :ensure t
   :hook (after-init . vertico-mode)
@@ -983,14 +991,6 @@ completion, and inserts whatever we have followed by a space."
      (consult-recent-file (completion-ignore-case . t))))
   :config
   (vertico-multiform-mode))
-
-
-(use-package orderless
-  :ensure t
-  :after vertico
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 
 (use-package consult
@@ -1090,6 +1090,16 @@ completion, and inserts whatever we have followed by a space."
   :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto-prefix 2)
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  :hook
+  (after-init . global-corfu-mode))
 
 
 (use-package ace-window
