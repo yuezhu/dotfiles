@@ -936,21 +936,6 @@ completion, and inserts whatever we have followed by a space."
 
 (use-package imenu
   :defer t
-  :preface
-  (defun imenu-rescan ()
-    "Rescan the buffer to refresh the imenu index"
-    (interactive)
-    (imenu--menubar-select imenu--rescan-item))
-
-  :commands (imenu-add-menubar-index
-             imenu--menubar-select)
-
-  :hook ((emacs-lisp-mode
-          go-mode
-          org-mode
-          markdown-mode)
-         . imenu-add-menubar-index)
-
   :custom
   (imenu-auto-rescan t)
   (imenu-auto-rescan-maxout 600000)
