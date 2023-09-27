@@ -1081,8 +1081,18 @@ completion, and inserts whatever we have followed by a space."
   :ensure t
   :custom
   (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.1)
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
+  (corfu-separator ?\s)          ;; Orderless field separator
+  (corfu-quit-no-match 'separator)
+  (corfu-min-width 60)
+  (corfu-scroll-margin 5)        ;; Use scroll margin
+  :bind (:map corfu-map
+              ("<escape>" . corfu-quit)
+              ("M-SPC"    . corfu-insert-separator)
+              ("M-d"      . corfu-info-documentation)
+              ("M-l"      . corfu-info-location))
   :hook
   (after-init . global-corfu-mode))
 
