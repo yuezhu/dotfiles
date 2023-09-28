@@ -713,7 +713,7 @@ ignore stuff starting with \"http\" or \"https\"."
 
 
 (use-package hippie-exp
-  :bind ("M-/" . hippie-expand)
+  ;; :bind ("M-/" . hippie-expand)
   :defer t
   :config
   (advice-add 'hippie-expand :around
@@ -1033,6 +1033,12 @@ completion, and inserts whatever we have followed by a space."
                      :preview-key "M-."))
 
 
+(use-package consult-yasnippet
+  :ensure t
+  :after (consult yasnippet)
+  :bind ("M-/" . consult-yasnippet))
+
+
 (use-package marginalia
   :ensure t
   :after vertico
@@ -1086,15 +1092,28 @@ completion, and inserts whatever we have followed by a space."
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-separator ?\s)          ;; Orderless field separator
   (corfu-quit-no-match 'separator)
-  (corfu-min-width 60)
+  (corfu-preview-current nil)    ;; Disable current candidate preview
   (corfu-scroll-margin 5)        ;; Use scroll margin
+  (corfu-min-width 60)
+  (corfu-popupinfo-delay nil)
+
   :bind (:map corfu-map
               ("<escape>" . corfu-quit)
-              ("M-SPC"    . corfu-insert-separator)
-              ("M-d"      . corfu-info-documentation)
-              ("M-l"      . corfu-info-location))
+              ("M-l"      . corfu-info-location)
+              ("M-d"      . corfu-popupinfo-toggle))
+
   :hook
-  (after-init . global-corfu-mode))
+  (after-init . global-corfu-mode)
+  (global-corfu-mode . corfu-popupinfo-mode))
+
+
+(use-package cape
+  :ensure t
+  :after corfu
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-keyword t)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev t)
+  (add-to-list 'completion-at-point-functions #'cape-file t))
 
 
 (use-package ace-window
