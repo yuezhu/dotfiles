@@ -1453,6 +1453,9 @@ completion, and inserts whatever we have followed by a space."
 
   ;; Using `reformatter-define' will cause `:config' to run even though it
   ;; should be deferred due to the presence of `:hook'.
+  (reformatter-define clang-format
+    :program "clang-format"
+    :args (list "--assume-filename" (buffer-file-name)))
   (reformatter-define json-format
     :program "jq"
     :args '("." "--monochrome-output" "--indent" "2"))
@@ -1470,6 +1473,9 @@ completion, and inserts whatever we have followed by a space."
     :args '("fmt" "-no-color" "-"))
 
   :hook
+  (c-mode-common
+   . (lambda ()
+       (bind-key "<f12>" #'clang-format-buffer c-mode-base-map)))
   (json-mode
    . (lambda ()
        (bind-key "<f12>" #'json-format-buffer json-mode-map)))
