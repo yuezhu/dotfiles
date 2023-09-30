@@ -385,8 +385,6 @@
 
 
 (use-package elec-pair
-  :custom
-  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
   :hook
   (after-init . electric-pair-mode))
 
