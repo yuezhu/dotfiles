@@ -1255,37 +1255,57 @@ completion, and inserts whatever we have followed by a space."
   :hook
   (org-mode
    . (lambda ()
-       (org-indent-mode 1)
+       ;; (org-indent-mode 1)
        (setq-local fill-column 120)
        (setq-local electric-pair-pairs
-                   (append electric-pair-pairs '((?/ . ?/)
-                                                 (?= . ?=)
-                                                 (?* . ?*)
-                                                 (?+ . ?+)
+                   (append electric-pair-pairs '((?* . ?*)
+                                                 (?/ . ?/)
                                                  (?_ . ?_)
-                                                 (?~ . ?~))))
+                                                 (?= . ?=)
+                                                 (?~ . ?~)
+                                                 (?+ . ?+))))
        (setq-local electric-pair-text-pairs electric-pair-pairs)))
 
   :custom
-  (org-catch-invisible-edits t)
+  (org-clone-delete-id t)
+  (org-default-notes-file (concat
+                           (file-name-as-directory org-directory)
+                           "notes.org"))
+  (org-edit-src-content-indentation 0)
   (org-export-default-language "en")
   (org-export-with-creator t)
   (org-export-with-section-numbers nil)
   (org-export-with-sub-superscripts '{})
   (org-export-with-toc nil)
+  (org-hide-emphasis-markers nil)
+  (org-hide-leading-stars t)
   (org-html-extension "html")
   (org-html-htmlize-output-type 'inline-css)
   (org-image-actual-width nil)
   (org-log-done 'time)
-  (org-src-fontify-natively t)
+  (org-src-window-setup 'current-window)
   (org-startup-folded "nofold")
-  (org-default-notes-file "~/org/notes.org")
+  (org-yank-adjusted-subtrees t)
+  
+  (org-capture-templates
+   '(("a" "Add Task" entry
+      (file+headline "todo.org" "Inbox")
+      "* TODO %?
+:PROPERTIES:
+:ID:       %(shell-command-to-string \"uuidgen\"):CREATED:  %U
+:END:"
+      :prepend t)
+     ("j" "Journal" entry
+      (file+olp+datetree "journal.org")
+      "* %?\n%i
+:PROPERTIES:
+:ID:       %(shell-command-to-string \"uuidgen\"):CREATED:  %U
+:END:"
+      :prepend t)))
 
   :config
-  (let ((org-notes-directory
-         (file-name-directory (file-truename org-default-notes-file))))
-    (unless (file-directory-p org-notes-directory)
-      (make-directory org-notes-directory)))
+  (unless (file-directory-p org-directory)
+    (make-directory org-directory))
 
   ;; (add-to-list 'display-buffer-alist
   ;;              '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
