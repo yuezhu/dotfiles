@@ -300,16 +300,19 @@
           . (lambda () (visual-line-mode -1))))
   :custom
   (column-number-mode t)
-  (global-mark-ring-max 500)
   (indent-tabs-mode nil)
+  (line-number-mode t)
+  (size-indication-mode t)
+  (transient-mark-mode t)
+
+  (global-mark-ring-max 500)
+  (mark-ring-max 100)
+
   (kill-do-not-save-duplicates t)
   (kill-ring-max 1000000)
   (kill-whole-line nil)
-  (line-number-mode t)
-  (mark-ring-max 100)
-  (next-line-add-newlines nil)
-  (size-indication-mode t)
-  (transient-mark-mode t))
+
+  (next-line-add-newlines nil))
 
 
 (use-package ns-win
@@ -327,8 +330,6 @@
 
 (use-package xref
   :defer t
-  :commands (xref-pulse-momentarily
-             xref-push-marker-stack)
   :custom
   (xref-prompt-for-identifier nil))
 
@@ -398,9 +399,7 @@
 
 (use-package ialign
   :ensure t
-  :bind ("C-c |" . ialign)
-  :bind (:map ialign-minibuffer-keymap
-              ("C-c =" . ialign-increment-spacing)))
+  :bind ("C-c |" . ialign))
 
 
 (use-package exec-path-from-shell
@@ -1284,7 +1283,7 @@ completion, and inserts whatever we have followed by a space."
   (org-src-window-setup 'current-window)
   (org-startup-folded "nofold")
   (org-yank-adjusted-subtrees t)
-  
+
   (org-capture-templates
    '(("a" "Add Task" entry
       (file+headline "todo.org" "Inbox")
