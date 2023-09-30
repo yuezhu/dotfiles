@@ -6,6 +6,7 @@
 [user]
 	name = Yue Zhu
 	useConfigOnly = true
+	email = 1224535+yuezhu@users.noreply.github.com
 [diff]
 	tool = vimdiff
 [difftool]
