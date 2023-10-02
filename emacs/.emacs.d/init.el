@@ -965,7 +965,6 @@ completion, and inserts whatever we have followed by a space."
   :ensure t
   :hook (after-init . vertico-mode)
   :custom
-  (vertico-count 20)
   (vertico-multiform-commands
    '((consult-yank-pop indexed)
      (consult-yank-replace indexed)
@@ -1252,18 +1251,20 @@ completion, and inserts whatever we have followed by a space."
   :hook
   (org-mode
    . (lambda ()
-       ;; (org-indent-mode 1)
        (setq-local fill-column 120)
-       (setq-local electric-pair-pairs
-                   (append electric-pair-pairs '((?* . ?*)
-                                                 (?/ . ?/)
-                                                 (?_ . ?_)
-                                                 (?= . ?=)
-                                                 (?~ . ?~)
-                                                 (?+ . ?+))))
-       (setq-local electric-pair-text-pairs electric-pair-pairs)))
+       ;; (setq-local electric-pair-pairs
+       ;;             (append electric-pair-pairs '((?* . ?*)
+       ;;                                           (?/ . ?/)
+       ;;                                           (?_ . ?_)
+       ;;                                           (?= . ?=)
+       ;;                                           (?~ . ?~)
+       ;;                                           (?+ . ?+))))
+       ;; (setq-local electric-pair-text-pairs electric-pair-pairs)
+       ))
 
   :custom
+  (org-blank-before-new-entry '((heading)
+                                (plain-list-item)))
   (org-clone-delete-id t)
   (org-default-notes-file (concat
                            (file-name-as-directory org-directory)
@@ -1274,42 +1275,62 @@ completion, and inserts whatever we have followed by a space."
   (org-export-with-section-numbers nil)
   (org-export-with-sub-superscripts '{})
   (org-export-with-toc nil)
-  (org-hide-emphasis-markers nil)
+  (org-hide-emphasis-markers t)
   (org-hide-leading-stars t)
-  (org-html-extension "html")
-  (org-html-htmlize-output-type 'inline-css)
-  (org-image-actual-width nil)
   (org-log-done 'time)
+  (org-publish-use-timestamps-flag nil)
   (org-src-window-setup 'current-window)
-  (org-startup-folded "nofold")
+  ;; (org-startup-folded "nofold")
+  (org-startup-indented t)
   (org-yank-adjusted-subtrees t)
 
   (org-capture-templates
-   '(("a" "Add Task" entry
-      (file+headline "todo.org" "Inbox")
+   '(("t" "Task" entry
+      (file+headline "task.org" "Inbox")
       "* TODO %?
 :PROPERTIES:
-:ID:       %(shell-command-to-string \"uuidgen\"):CREATED:  %U
+:CREATED: %U
 :END:"
-      :prepend t)
+      :prepend t
+      :empty-lines 1)
      ("j" "Journal" entry
       (file+olp+datetree "journal.org")
-      "* %?\n%i
+      "* %?
 :PROPERTIES:
-:ID:       %(shell-command-to-string \"uuidgen\"):CREATED:  %U
+:CREATED: %U
 :END:"
-      :prepend t)))
+      :empty-lines 1)
+     ("s" "Snippet" entry
+      (file+headline "" "Snippet")
+      "* %?
+:PROPERTIES:
+:CREATED: %U
+:END:"
+      :empty-lines 1)
+     ("m" "Miscellaneous" entry
+      (file+headline "" "Miscellaneous")
+      "* %?
+:PROPERTIES:
+:CREATED: %U
+:END:"
+      :empty-lines 1)))
+
+  (org-publish-project-alist
+   '(("org"
+      :base-directory "~/org/"
+      :base-extension "org"
+      :publishing-function org-html-publish-to-html
+      :publishing-directory "~/.www"
+      :recursive t)))
 
   :config
   (unless (file-directory-p org-directory)
     (make-directory org-directory))
 
-  ;; (add-to-list 'display-buffer-alist
-  ;;              '("\\`\\(\\*Org Links\\*\\|\\*Org Select\\*\\|CAPTURE\\-.*\\)\\'"
-  ;;                (display-buffer-at-bottom)
-  ;;                (inhibit-same-window . t)
-  ;;                (window-height . 0.5)))
-  )
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Org Select\\*\\'"
+                 (display-buffer-at-bottom)
+                 (inhibit-same-window . t))))
 
 
 (use-package org-make-toc
