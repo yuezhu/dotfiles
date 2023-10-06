@@ -710,7 +710,7 @@ ignore stuff starting with \"http\" or \"https\"."
 
 
 (use-package hippie-exp
-  ;; :bind ("M-/" . hippie-expand)
+  :bind ("M-/" . hippie-expand)
   :defer t
   :config
   (advice-add 'hippie-expand :around
@@ -1029,12 +1029,6 @@ completion, and inserts whatever we have followed by a space."
                      :preview-key "M-."))
 
 
-(use-package consult-yasnippet
-  :ensure t
-  :after (consult yasnippet)
-  :bind ("M-/" . consult-yasnippet))
-
-
 (use-package marginalia
   :ensure t
   :after vertico
@@ -1083,15 +1077,14 @@ completion, and inserts whatever we have followed by a space."
   :ensure t
   :custom
   (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.1)
+  (corfu-auto-delay 0.2)
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-separator ?\s)          ;; Orderless field separator
   (corfu-quit-no-match 'separator)
   (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-scroll-margin 5)        ;; Use scroll margin
   (corfu-min-width 60)
-  (corfu-popupinfo-delay nil)
+  ;; (corfu-popupinfo-delay nil)
 
   :bind (:map corfu-map
               ("<escape>" . corfu-quit)
@@ -1100,7 +1093,18 @@ completion, and inserts whatever we have followed by a space."
 
   :hook
   (after-init . global-corfu-mode)
-  (global-corfu-mode . corfu-popupinfo-mode))
+  (global-corfu-mode . corfu-popupinfo-mode)
+
+  :preface
+  (defun corfu-quit-yas-expand ()
+    "Quit Corfu and trigger yasnippet expand."
+    (interactive)
+    (corfu-quit)
+    (yas-expand))
+
+  :config
+  (with-eval-after-load 'yasnippet
+    (bind-key "<tab>" #'corfu-quit-yas-expand corfu-map)))
 
 
 (use-package cape
