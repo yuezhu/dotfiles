@@ -1267,6 +1267,7 @@ completion, and inserts whatever we have followed by a space."
        ))
 
   :custom
+  (org-agenda-files `(,(file-name-as-directory org-directory)))
   (org-blank-before-new-entry '((heading)
                                 (plain-list-item)))
   (org-clone-delete-id t)
