@@ -1284,6 +1284,7 @@ completion, and inserts whatever we have followed by a space."
   (org-hide-emphasis-markers t)
   (org-hide-leading-stars t)
   (org-log-done 'time)
+  (org-log-reschedule 'time)
   (org-publish-use-timestamps-flag nil)
   (org-src-window-setup 'current-window)
   ;; (org-startup-folded "nofold")
@@ -1292,34 +1293,32 @@ completion, and inserts whatever we have followed by a space."
 
   (org-capture-templates
    '(("t" "Task" entry
-      (file+headline "task.org" "Inbox")
+      (file+headline "tasks.org" "Inbox")
       "* TODO %?
 :PROPERTIES:
 :CREATED: %U
 :END:"
-      :prepend t
-      :empty-lines 1)
+      :prepend t)
      ("j" "Journal" entry
-      (file+olp+datetree "journal.org")
+      (file+olp+datetree "tasks.org" "Journal")
       "* %?
 :PROPERTIES:
 :CREATED: %U
-:END:"
-      :empty-lines 1)
+:END:")
      ("s" "Snippet" entry
       (file+headline "" "Snippet")
       "* %?
 :PROPERTIES:
 :CREATED: %U
 :END:"
-      :empty-lines 1)
+      :jump-to-captured t)
      ("m" "Miscellaneous" entry
       (file+headline "" "Miscellaneous")
       "* %?
 :PROPERTIES:
 :CREATED: %U
 :END:"
-      :empty-lines 1)))
+      :jump-to-captured t)))
 
   (org-publish-project-alist
    '(("org"
@@ -1897,7 +1896,7 @@ no region is activated, this will operate on the entire buffer."
             size))
 
   (defun set-frame-font ()
-    (let ((macos-font-size 14)
+    (let ((macos-font-size 15)
           (linux-font-size 16))
       (cond
        ((equal system-type 'gnu/linux)
