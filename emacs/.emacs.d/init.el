@@ -1249,7 +1249,8 @@ completion, and inserts whatever we have followed by a space."
   :ensure t
   :defer t
   :pin gnu
-  :bind (("C-c c" . org-capture)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
 
   :hook
@@ -1333,7 +1334,7 @@ completion, and inserts whatever we have followed by a space."
     (make-directory org-directory))
 
   (add-to-list 'display-buffer-alist
-               '("\\`\\*Org Select\\*\\'"
+               '("\\`\\*Org Select\\*\\|\\*Agenda Commands\\*\\'"
                  (display-buffer-at-bottom)
                  (inhibit-same-window . t))))
 
