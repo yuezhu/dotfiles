@@ -2,99 +2,70 @@
 typeset -U path
 typeset -U fpath
 
-## PATH
-# On macOS, setting $path in the .zshenv does not produce the desired order
-# https://stackoverflow.com/a/63344431
-for d in \
-  /usr/local/sbin \
-    /usr/local/bin;
+## Export homebrew environment variables
+for brew in \
+  /usr/local/bin/brew \
+    /opt/homebrew/bin/brew;
 do
-  if [[ -d "${d}" ]]; then
-    path=("${d}" $path)
-  fi
-done
-
-# Golang
-for d in \
-  /usr/local/opt/go/libexec \
-    /usr/local/go;
-do
-  if [[ -d "${d}" ]]; then
-    export GOROOT="${d}"
-    path=("${GOROOT}/bin" $path)
+  if [[ -x "${brew}" ]]; then
+    eval "$(${brew} shellenv)"
     break
   fi
 done
 
-# Java
-if [[ -d /usr/local/opt/openjdk/bin ]]; then
-  path=(/usr/local/opt/openjdk/bin $path)
-  export CPPFLAGS="-I/usr/local/opt/openjdk/include"
-fi
-
-# Ruby
-if [[ -d /usr/local/opt/ruby/bin ]]; then
-  path=(/usr/local/opt/ruby/bin $path)
-fi
-
-# Tooling binaries
-for d in \
-  /usr/local/opt/gawk/libexec/gnubin \
-    /usr/local/opt/gnu-sed/libexec/gnubin \
-    /usr/local/opt/gnu-indent/libexec/gnubin \
-    /usr/local/opt/make/libexec/gnubin \
-    /usr/local/opt/findutils/libexec/gnubin \
-    /usr/local/opt/mysql-client/bin \
-    /usr/local/opt/openssl/bin \
-    /usr/local/opt/curl/bin;
+## Use binaries from homebrew
+for dir in \
+  "${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
+    "${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin" \
+    "${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
+    "${HOMEBREW_PREFIX}/opt/curl/bin";
 do
-  if [[ -d "${d}" ]]; then
-    path=("${d}" $path)
+  if [[ -d "${dir}" ]]; then
+    path=("${dir}" $path)
   fi
 done
 
-# Prioritize my own binaries
-for d in \
+## Override with my own binaries
+for dir in \
   "${HOME}/bin" \
     "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/bin";
 do
-  if [[ -d "${d}" ]]; then
-    path=("${d}" $path)
+  if [[ -d "${dir}" ]]; then
+    path=("${dir}" $path)
   fi
 done
 
+
 ## zsh-autosuggestions
-for d in \
+for dir in \
   "${HOME}/.nix-profile/share/zsh-autosuggestions" \
-    /usr/local/share/zsh-autosuggestions \
-    /usr/share/zsh-autosuggestions;
+    "${HOMEBREW_PREFIX}/share/zsh-autosuggestions";
 do
-  if [[ -d "${d}" ]]; then
-    source "${d}/zsh-autosuggestions.zsh"
+  if [[ -d "${dir}" ]]; then
+    source "${dir}/zsh-autosuggestions.zsh"
     break
   fi
 done
 
 ## zsh-syntax-highlighting
-for d in \
+for dir in \
   "${HOME}/.nix-profile/share/zsh-syntax-highlighting" \
-    /usr/local/share/zsh-syntax-highlighting \
-    /usr/share/zsh-syntax-highlighting;
+    "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting";
 do
-  if [[ -d "${d}" ]]; then
-    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="${d}/highlighters"
-    source "${d}/zsh-syntax-highlighting.zsh"
+  if [[ -d "${dir}" ]]; then
+    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="${dir}/highlighters"
+    source "${dir}/zsh-syntax-highlighting.zsh"
     break
   fi
 done
 
-## Additional completions
-for d in \
+## zsh-completions
+for dir in \
   "${HOME}/.nix-profile/share/zsh/site-functions" \
-    /usr/local/share/zsh-completions;
+    "${HOMEBREW_PREFIX}/share/zsh-completions";
 do
-  if [[ -d "${d}" ]]; then
-    fpath=("${d}" $fpath)
+  if [[ -d "${dir}" ]]; then
+    fpath=("${dir}" $fpath)
   fi
 done
 
@@ -168,12 +139,12 @@ setopt MENU_COMPLETE
 setopt LIST_PACKED
 
 # Export LS_COLORS
-for f in \
-  /usr/local/bin/gdircolors \
+for file in \
+  "${HOMEBREW_PREFIX}/bin/gdircolors" \
     /usr/bin/dircolors;
 do
-  if [[ -x "${f}" ]]; then
-    eval "$("${f}" -b)"
+  if [[ -x "${file}" ]]; then
+    eval "$("${file}" -b)"
     break
   fi
 done
