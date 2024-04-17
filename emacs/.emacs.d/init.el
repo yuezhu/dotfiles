@@ -1401,6 +1401,11 @@ completion, and inserts whatever we have followed by a space."
   :defer t)
 
 
+(use-package edit-indirect
+  :ensure t
+  :defer t)
+
+
 (use-package paredit
   :disabled
   :ensure t
