@@ -193,7 +193,7 @@ zstyle ':completion:*:match:*' original only
 
 # Increase the number of errors based on the length of the typed word
 # zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
-zstyle ':completion:*' max-errors 2
+zstyle ':completion:*' max-errors 1
 
 # Ignore shell functions that should not be used individually
 zstyle ':completion:*:functions' ignored-patterns '_*'
