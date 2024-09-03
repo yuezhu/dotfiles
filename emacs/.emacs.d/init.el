@@ -73,8 +73,8 @@
   :defer t
   :custom
   ;; src/nsterm.m
-  ;; (ns-alternate-modifier 'super)
-  ;; (ns-command-modifier 'meta)
+  (ns-alternate-modifier 'super)
+  (ns-command-modifier 'meta)
 
   ;; src/frame.c
   (menu-bar-mode (equal system-type 'darwin))
@@ -1872,6 +1872,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
@@ -1901,7 +1902,7 @@ no region is activated, this will operate on the entire buffer."
             size))
 
   (defun set-frame-font ()
-    (let ((macos-font-size 15)
+    (let ((macos-font-size 14)
           (linux-font-size 16))
       (cond
        ((equal system-type 'gnu/linux)
