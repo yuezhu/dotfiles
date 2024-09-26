@@ -1872,7 +1872,6 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
