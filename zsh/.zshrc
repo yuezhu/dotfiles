@@ -173,11 +173,11 @@ zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-dirs-first true
 
 # Describe completion
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*:corrections' format '%F{yellow}——————— %d (errors: %e) ———————%f'
-zstyle ':completion:*:descriptions' format '%F{green}——————— %d ———————%f'
-zstyle ':completion:*:messages' format '%F{white}——————— %d ———————%f'
-zstyle ':completion:*:warnings' format '%F{red}——————— no completions ———————%f'
+zstyle ':completion:*' auto-description '%Bspecify: %d%b'
+zstyle ':completion:*:corrections' format '%B%F{yellow}───── %d (errors: %e) ─────%f%b'
+zstyle ':completion:*:descriptions' format '%B%F{green}───── %d ─────%f%b'
+zstyle ':completion:*:messages' format '%B%F{white}───── %d ─────%f%b'
+zstyle ':completion:*:warnings' format '%B%F{red}───── no completions ─────%f%b'
 
 # Allow fuzzy and `*' matching completion
 zstyle ':completion:*' completer _complete _match _approximate
@@ -193,7 +193,7 @@ zstyle ':completion:*:match:*' original only
 
 # Increase the number of errors based on the length of the typed word
 # zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
-zstyle ':completion:*' max-errors 1
+zstyle ':completion:*' max-errors 0
 
 # Ignore shell functions that should not be used individually
 zstyle ':completion:*:functions' ignored-patterns '_*'
