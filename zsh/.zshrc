@@ -272,7 +272,7 @@ PROMPT='%B%F{green}%m%f %F{blue}%~%f${vcs_info_msg_0_} %#%b '
 
 ## MISC
 # Report command running time if its user/system takes longer than 10 seconds
-REPORTTIME=10
+# REPORTTIME=10
 
 # 16.2.6 Input/Output
 # Print the exit value of programs with non-zero exit status.
