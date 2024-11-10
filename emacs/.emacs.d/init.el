@@ -1933,7 +1933,7 @@ no region is activated, this will operate on the entire buffer."
 ;;
 ;; Configure additional keybindings
 ;;
-(bind-key "C-x k"           #'kill-this-buffer)
+(bind-key "C-x k"           #'kill-current-buffer)
 (bind-key "<C-M-backspace>" #'backward-kill-sexp)
 (when (display-graphic-p) (unbind-key "C-z"))
 
