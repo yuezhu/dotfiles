@@ -848,68 +848,6 @@ this is effective with some expand functions, eg.,
   )
 
 
-(use-package company
-  :disabled
-  :ensure t
-  ;; 2022-11-06 enable lighter because it shows the backend used for
-  ;; the current completion.
-  ;; :bind ("<tab>" . company-indent-or-complete-common)
-  :bind (:map company-active-map
-              ("C-p" . company-select-previous-or-abort)
-              ("C-n" . company-select-next-or-abort)
-              (" "   . (lambda ()
-                         "When completion is active, entering a space aborts the
-completion, and inserts whatever we have followed by a space."
-                         (interactive)
-                         (company-abort)
-                         (self-insert-command 1))))
-  :bind (:map company-search-map
-              ("C-p" . company-select-previous)
-              ("C-n" . company-select-next)
-              ("C-f" . company-search-toggle-filtering))
-
-  :hook
-  (after-init . global-company-mode)
-
-  :custom
-  (company-backends
-   '((company-capf company-dabbrev-code :separate)
-     company-files company-keywords company-dabbrev))
-  (company-dabbrev-downcase nil)
-  (company-dabbrev-minimum-length 2)
-  (company-minimum-prefix-length 2)
-  (company-selection-wrap-around t)
-  (company-transformers '(delete-dups)))
-
-
-(use-package company-quickhelp
-  :disabled ;; 2022-11-07 `company' has quick help messages in the echo area.
-  :ensure t
-  :after company
-  :defer 2
-  :config
-  (company-quickhelp-mode 1))
-
-
-(use-package yasnippet
-  :ensure t
-  :defer t
-  :diminish yas-minor-mode
-  :mode ("/\\.emacs\\.d/snippets/" . snippet-mode)
-  :hook ((text-mode
-          prog-mode
-          conf-mode
-          ssh-config-mode
-          protobuf-mode)
-         . yas-minor-mode))
-
-
-(use-package yasnippet-snippets
-  :ensure t
-  :defer t
-  :after yasnippet)
-
-
 (use-package abbrev
   ;; Defer does not work. It is loaded somewhere else.
   ;; 09/11/20 `enh-ruby-mode' loads `abbrev'.
@@ -1093,18 +1031,7 @@ completion, and inserts whatever we have followed by a space."
 
   :hook
   (after-init . global-corfu-mode)
-  (global-corfu-mode . corfu-popupinfo-mode)
-
-  :preface
-  (defun corfu-quit-yas-expand ()
-    "Quit Corfu and trigger yasnippet expand."
-    (interactive)
-    (corfu-quit)
-    (yas-expand))
-
-  :config
-  (with-eval-after-load 'yasnippet
-    (bind-key "<tab>" #'corfu-quit-yas-expand corfu-map)))
+  (global-corfu-mode . corfu-popupinfo-mode))
 
 
 (use-package cape
@@ -1760,12 +1687,6 @@ no region is activated, this will operate on the entire buffer."
   :defer t)
 
 
-(use-package systemd
-  :ensure t
-  :magic ("\\[Unit\\]" . systemd-mode)
-  :defer t)
-
-
 (use-package yaml-mode
   :ensure t
   :defer t
@@ -1800,11 +1721,6 @@ no region is activated, this will operate on the entire buffer."
   (json-mode . (lambda () (setq-local tab-width 2))))
 
 
-(use-package ovpn-mode
-  :ensure t
-  :defer t)
-
-
 (use-package jsonnet-mode
   :ensure t
   :bind (:map jsonnet-mode-map
@@ -1829,11 +1745,6 @@ no region is activated, this will operate on the entire buffer."
 (use-package dockerfile-mode
   :ensure t
   :defer t)
-
-
-(use-package syslog-mode
-  :ensure t
-  :mode "\\`/var/log/\\(syslog\\|messages\\|system\\.log\\)\\'")
 
 
 (use-package ssh-config-mode
@@ -1872,6 +1783,7 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
