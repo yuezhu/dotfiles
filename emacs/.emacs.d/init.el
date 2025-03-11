@@ -1766,6 +1766,15 @@ no region is activated, this will operate on the entire buffer."
   :defer t)
 
 
+(use-package plantuml-mode
+  :ensure t
+  :defer t
+  :custom
+  (plantuml-jar-path "~/plantuml.jar")
+  (plantuml-default-exec-mode 'jar)
+  (plantuml-indent-level 2))
+
+
 (use-package zenburn-theme
   :disabled
   :ensure t
