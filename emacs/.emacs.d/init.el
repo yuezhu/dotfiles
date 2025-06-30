@@ -101,8 +101,11 @@
   (delete-by-moving-to-trash t)
 
   ;; src/minibuffer.c
+  (context-menu-mode t)
   (enable-recursive-minibuffers t)
   (hisqtory-delete-duplicates t)
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
 
   ;; src/buffer.c
   (fill-column 78)
@@ -137,6 +140,11 @@
   (make-backup-files nil)
   (mode-require-final-newline t)
   (require-final-newline t)
+
+  ;; mouse.el
+  ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
+  ;; to switch display modes.
+  (context-menu-mode t)
 
   ;; startup.el
   (inhibit-startup-screen t)
@@ -776,27 +784,29 @@ this is effective with some expand functions, eg.,
        ;; (dired-hide-details-mode)
        (setq-local auto-revert-verbose nil)))
 
-  :init
-  (when (and (equal system-type 'darwin)
-             (executable-find "gls"))
-    (setq insert-directory-program "gls"))
-
-  (setq
-   dired-listing-switches
+  :custom
+  (insert-directory-program
+   (cond
+    ((and (equal system-type 'darwin)
+          (executable-find "gls"))
+     "gls")
+    ((equal system-type 'darwin)
+     "ls")))
+  (dired-listing-switches
    (cond
     ((equal system-type 'gnu/linux)
      "-Ahl --group-directories-first")
     ((equal system-type 'darwin)
      (if (string-suffix-p "gls" insert-directory-program)
          "-Alh --group-directories-first"
-       "-Ahl")))
-   dired-dwim-target t
-   dired-isearch-filenames 'dwim
-   dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$"
-   dired-omit-size-limit nil
-   dired-omit-verbose nil
-   dired-recursive-copies 'always
-   dired-recursive-deletes 'always))
+       "-Ahl"))))
+  (dired-dwim-target t)
+  (dired-isearch-filenames 'dwim)
+  (dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$")
+  (dired-omit-size-limit nil)
+  (dired-omit-verbose nil)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always))
 
 
 (use-package diredfl
@@ -885,9 +895,6 @@ this is effective with some expand functions, eg.,
 ;; Prevent cursor from moving onto the minibuffer prompt
 (use-package cursor-sensor
   :defer t
-  :init
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
   :hook
   (minibuffer-setup . cursor-intangible-mode))
 
@@ -1792,7 +1799,6 @@ no region is activated, this will operate on the entire buffer."
 
 
 (use-package color-theme-sanityinc-tomorrow
-  :disabled
   :ensure t
   :config
   (load-theme 'sanityinc-tomorrow-bright t)
@@ -1821,16 +1827,20 @@ no region is activated, this will operate on the entire buffer."
     (format "-*-Hack-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
             size))
 
+  (defsubst font-Noto (size)
+    (format (cond
+             ((equal system-type 'gnu/linux)
+              "-GOOG-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-*-0-iso10646-1")
+             ((equal system-type 'darwin)
+              "-*-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-p-0-iso10646-1"))
+            size))
+
   (defun set-frame-font ()
-    (let ((macos-font-size 14)
-          (linux-font-size 16))
-      (cond
-       ((equal system-type 'gnu/linux)
-        (set-face-attribute 'default nil :font
-                            (font-Hack linux-font-size)))
-       ((equal system-type 'darwin)
-        (set-face-attribute 'default nil :font
-                            (font-Menlo macos-font-size))))))
+    (cond
+     ((equal system-type 'gnu/linux)
+      (set-face-attribute 'default nil :font (font-Noto 15)))
+     ((equal system-type 'darwin)
+      (set-face-attribute 'default nil :font (font-Noto 14)))))
 
   (add-hook 'after-init-hook
             #'(lambda ()
