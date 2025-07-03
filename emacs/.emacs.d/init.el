@@ -1475,6 +1475,11 @@ this is effective with some expand functions, eg.,
        (bind-key "<f12>" #'terraform-format-buffer terraform-mode-map))))
 
 
+(use-package google-c-style
+  :ensure t
+  :defer t)
+
+
 (use-package prog-mode
   :defer t
   :preface
@@ -1554,40 +1559,14 @@ no region is activated, this will operate on the entire buffer."
          ("\\.m\\'"                   . c-mode)
          ("\\.mm\\'"                  . c++-mode))
   :hook
-  (c-mode-common . (lambda () (cwarn-mode 1)))
-  (c++-mode . (lambda () (c-set-style "clang")))
+  (c-mode-common
+   . (lambda ()
+       (cwarn-mode 1)
+       (google-set-c-style)
+       (google-make-newline-indent)))
 
   :config
-  (unbind-key "C-c C-c" c++-mode-map)
-
-  (add-to-list
-   'c-style-alist
-   '("clang"
-     (indent-tabs-mode . nil)
-     (c-basic-offset . 2)
-     (c-comment-only-line-offset . (0 . 0))
-     (c-hanging-braces-alist
-      . ((substatement-open before after)
-         (arglist-cont-nonempty)))
-     (c-offsets-alist
-      . ((statement-block-intro . +)
-         (knr-argdecl-intro . 5)
-         (substatement-open . 0)
-         (substatement-label . 0)
-         (label . 0)
-         (case-label . 0)
-         (statement-case-open . 0)
-         (statement-cont . +)
-         (arglist-intro . +)
-         (arglist-close . +)
-         (inline-open . 0)
-         (brace-list-open . 0)
-         (innamespace . 0)
-         (topmost-intro-cont
-          . (first c-lineup-topmost-intro-cont
-                   c-lineup-gnu-DEFUN-intro-cont))))
-     (c-special-indent-hook . c-gnu-impose-minimum)
-     (c-block-comment-prefix . ""))))
+  (unbind-key "C-c C-c" c++-mode-map))
 
 
 (use-package python
@@ -1828,11 +1807,7 @@ no region is activated, this will operate on the entire buffer."
             size))
 
   (defsubst font-Noto (size)
-    (format (cond
-             ((equal system-type 'gnu/linux)
-              "-GOOG-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-*-0-iso10646-1")
-             ((equal system-type 'darwin)
-              "-*-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-p-0-iso10646-1"))
+    (format "-*-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-*-0-iso10646-1"
             size))
 
   (defun set-frame-font ()
