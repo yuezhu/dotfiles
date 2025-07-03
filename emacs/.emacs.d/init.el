@@ -1790,36 +1790,18 @@ no region is activated, this will operate on the entire buffer."
 
 
 (when (display-graphic-p)
-  (defsubst font-Menlo (size)
-    (format "-*-Menlo-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-            size))
-
-  (defsubst font-SFMono (size)
-    (format "-*-SF Mono-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-            size))
-
-  (defsubst font-UbuntuMono (size)
-    (format "-*-Ubuntu Mono-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-            size))
-
-  (defsubst font-Hack (size)
-    (format "-*-Hack-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-            size))
-
-  (defsubst font-Noto (size)
-    (format "-*-Noto Sans Mono-regular-normal-normal-*-%d-*-*-*-*-0-iso10646-1"
-            size))
-
-  (defun set-frame-font ()
-    (cond
-     ((equal system-type 'gnu/linux)
-      (set-face-attribute 'default nil :font (font-Noto 15)))
-     ((equal system-type 'darwin)
-      (set-face-attribute 'default nil :font (font-Noto 14)))))
-
   (add-hook 'after-init-hook
             #'(lambda ()
-                (set-frame-font)
+                ;; Set frame font
+                (cond
+                 ((equal system-type 'gnu/linux)
+                  (set-face-attribute
+                   'default nil :font
+                   "-*-Hack-regular-normal-normal-*-16-*-*-*-*-0-iso10646-1"))
+                 ((equal system-type 'darwin)
+                  (set-face-attribute
+                   'default nil :font
+                   "-*-Menlo-regular-normal-normal-*-14-*-*-*-*-0-iso10646-1")))
                 (set-frame-parameter nil 'fullscreen 'maximized))
             t))
 
